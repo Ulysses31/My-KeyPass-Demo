@@ -1,0 +1,159 @@
+<div class="space-y-8 px-6 py-8 sm:px-8">
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <article
+      *ngFor="let card of summaryCards"
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            {{ card.label }}
+          </p>
+          <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-white">
+            {{ card.value }}
+          </p>
+        </div>
+        <span
+          class="rounded-full px-2 py-1 text-xs font-semibold"
+          [ngClass]="{
+            'bg-indigo-100 text-indigo-700': card.tone === 'indigo',
+            'bg-emerald-100 text-emerald-700': card.tone === 'emerald',
+            'bg-amber-100 text-amber-700': card.tone === 'amber',
+            'bg-rose-100 text-rose-700': card.tone === 'rose',
+          }"
+        >
+          {{ card.change }}
+        </span>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-[1.6fr_0.9fr]">
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+    >
+      <div class="mb-5 flex items-center justify-between">
+        <div>
+          <p class="text-sm text-slate-500 dark:text-slate-400">
+            Recent entries
+          </p>
+          <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+            Vault activity
+          </h2>
+        </div>
+        <button
+          class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+        >
+          View all
+        </button>
+      </div>
+
+      <div
+        class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700"
+      >
+        <table
+          class="min-w-full divide-y divide-slate-200 text-left text-sm dark:divide-slate-700"
+        >
+          <thead
+            class="bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+          >
+            <tr>
+              <th class="px-4 py-3 font-medium">Name</th>
+              <th class="px-4 py-3 font-medium">Username</th>
+              <th class="px-4 py-3 font-medium">Category</th>
+              <th class="px-4 py-3 font-medium">Updated</th>
+              <th class="px-4 py-3 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody
+            class="divide-y divide-slate-200 bg-white dark:divide-slate-700 dark:bg-slate-900"
+          >
+            <tr *ngFor="let item of vaultEntries">
+              <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">
+                {{ item.title }}
+              </td>
+              <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                {{ item.username }}
+              </td>
+              <td class="px-4 py-3 text-slate-600 dark:text-slate-300">
+                {{ item.category }}
+              </td>
+              <td class="px-4 py-3 text-slate-500 dark:text-slate-400">
+                {{ item.updated }}
+              </td>
+              <td class="px-4 py-3">
+                <span
+                  class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-700': item.status === 'Active',
+                    'bg-amber-100 text-amber-700':
+                      item.status === 'Needs review',
+                  }"
+                >
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div
+        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      >
+        <div class="mb-4 flex items-center justify-between">
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Overview</p>
+            <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
+              Categories
+            </h3>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div
+            *ngFor="let category of categories"
+            class="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800"
+          >
+            <div class="flex items-center gap-3">
+              <span
+                [ngClass]="category.color"
+                class="rounded-full px-2 py-1 text-xs font-semibold"
+                >{{ category.count }}</span
+              >
+              <span
+                class="text-sm font-medium text-slate-700 dark:text-slate-200"
+                >{{ category.name }}</span
+              >
+            </div>
+            <span class="text-xs text-slate-500 dark:text-slate-400"
+              >items</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      >
+        <p class="text-sm text-slate-500 dark:text-slate-400">Security score</p>
+        <div class="mt-4 flex items-end gap-3">
+          <span class="text-4xl font-bold text-slate-900 dark:text-white"
+            >96</span
+          >
+          <span class="mb-1 text-sm text-emerald-600">+8% this month</span>
+        </div>
+
+        <div
+          class="mt-5 h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+        >
+          <div
+            class="h-full w-[96%] rounded-full bg-gradient-to-r from-emerald-400 to-indigo-500"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
