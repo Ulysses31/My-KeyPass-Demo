@@ -1,0 +1,13 @@
+{
+  "name": "my-key-pass-demo-desktop",
+  "private": true,
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^31.7.1"
+  }
+}
