@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 
 interface SummaryCard {
   label: string;
@@ -23,8 +23,10 @@ interface VaultEntry {
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = "Vault Dashboard";
+  theme: "light" | "dark" = "light";
+  private readonly THEME_KEY = "keypass-theme";
 
   summaryCards: SummaryCard[] = [
     {
@@ -85,4 +87,25 @@ export class AppComponent {
     { name: "Developer", count: 17, color: "bg-violet-100 text-violet-700" },
     { name: "Shopping", count: 10, color: "bg-amber-100 text-amber-700" },
   ];
+
+  ngOnInit(): void {
+    const savedTheme = localStorage.getItem(this.THEME_KEY);
+    this.theme = savedTheme === "dark" ? "dark" : "light";
+    this.applyTheme();
+  }
+
+  get isDarkMode(): boolean {
+    return this.theme === "dark";
+  }
+
+  toggleTheme(): void {
+    this.theme = this.theme === "dark" ? "light" : "dark";
+    this.applyTheme();
+  }
+
+  applyTheme(): void {
+    const root = document.documentElement;
+    root.classList.toggle("dark", this.isDarkMode);
+    localStorage.setItem(this.THEME_KEY, this.theme);
+  }
 }
