@@ -3,9 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "ng serve --host 0.0.0.0 --port 4200",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "npm --prefix apps/web start",
+    "build": "npm --prefix apps/web run build",
+    "watch": "npm --prefix apps/web run watch",
+    "start:web": "npm --prefix apps/web start",
     "start:desktop": "npm --prefix apps/desktop start",
     "start:api": "node api/index.js",
     "start:server": "node server.js",
