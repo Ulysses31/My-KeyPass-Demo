@@ -1,9 +1,12 @@
 node_modules/
 dist/
 data/
+
 .vscode/
 .vite/
 .angular/
+
 apps/desktop/node_modules/
 api/node_modules/
+
 .DS_Store
