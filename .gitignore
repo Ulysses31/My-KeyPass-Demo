@@ -1,5 +1,7 @@
 node_modules/
 dist/
+data/
+.vscode/
 .vite/
 .angular/
 apps/desktop/node_modules/
