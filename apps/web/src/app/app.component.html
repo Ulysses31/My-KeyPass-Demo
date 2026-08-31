@@ -4,18 +4,20 @@
 >
   <div class="flex min-h-screen">
     <aside
-      class="hidden w-72 flex-col border-r border-slate-200 bg-slate-950 text-slate-100 lg:flex dark:border-slate-800 dark:bg-slate-900"
+      class="hidden w-72 flex-col border-r border-slate-200 bg-white text-slate-800 lg:flex dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
     >
       <div
-        class="flex items-center gap-3 border-b border-slate-800 px-6 py-5 dark:border-slate-700"
+        class="flex items-center gap-3 border-b border-slate-200 px-6 py-5 dark:border-slate-700"
       >
         <div
-          class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-lg font-bold text-indigo-300"
+          class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/20 text-indigo-300"
         >
-          K
+          <app-hero-icon name="lock-closed" sizeClass="h-6 w-6"></app-hero-icon>
         </div>
         <div>
-          <p class="text-xs uppercase tracking-[0.22em] text-slate-400">
+          <p
+            class="text-xs uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400"
+          >
             Secure
           </p>
           <h2 class="text-lg font-semibold">KeyPass</h2>
@@ -25,35 +27,43 @@
       <nav class="flex-1 space-y-2 px-4 py-6">
         <a
           routerLink="/overview"
-          routerLinkActive="bg-slate-800 text-white"
+          routerLinkActive="bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800/70 hover:text-white"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white"
         >
-          <span class="h-2.5 w-2.5 rounded-full bg-indigo-400"></span>
+          <app-hero-icon name="home"></app-hero-icon>
           Overview
         </a>
         <a
           routerLink="/categories"
-          routerLinkActive="bg-slate-800 text-white"
-          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800/70 hover:text-white"
+          routerLinkActive="bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white"
         >
-          <span class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+          <app-hero-icon name="bars-3"></app-hero-icon>
           Categories
         </a>
         <a
           routerLink="/data"
-          routerLinkActive="bg-slate-800 text-white"
-          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 transition hover:bg-slate-800/70 hover:text-white"
+          routerLinkActive="bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-white"
+          class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white"
         >
-          <span class="h-2.5 w-2.5 rounded-full bg-slate-500"></span>
+          <app-hero-icon name="table-cells"></app-hero-icon>
           Data
         </a>
       </nav>
 
-      <div class="border-t border-slate-800 p-4 dark:border-slate-700">
-        <div class="rounded-xl bg-slate-900 p-3 dark:bg-slate-800">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Team</p>
-          <p class="mt-2 text-sm font-medium text-slate-100">Personal vault</p>
+      <div class="border-t border-slate-200 p-4 dark:border-slate-700">
+        <div class="rounded-xl bg-slate-100 p-3 dark:bg-slate-800">
+          <p
+            class="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400"
+          >
+            Team
+          </p>
+          <p
+            class="mt-2 text-sm font-medium text-slate-800 dark:text-slate-100"
+          >
+            Personal vault
+          </p>
         </div>
       </div>
     </aside>
@@ -89,15 +99,7 @@
                 }"
                 (click)="theme = 'light'; applyTheme()"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="h-4 w-4 fill-current"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M12 2.75a.75.75 0 0 1 .75.75V4.5a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75Zm0 15.5a.75.75 0 0 1 .75.75v1a.75.75 0 0 1-1.5 0v-1a.75.75 0 0 1 .75-.75ZM4.93 4.93a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm12.34 12.34a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 0 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06ZM2.75 12a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1A.75.75 0 0 1 2.75 12Zm15.5 0a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1a.75.75 0 0 1-.75-.75ZM5.99 17.01a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 1 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06Zm12.02-12.02a.75.75 0 0 1 1.06 0l.7.7a.75.75 0 0 1-1.06 1.06l-.7-.7a.75.75 0 0 1 0-1.06ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"
-                  />
-                </svg>
+                <app-hero-icon name="sun"></app-hero-icon>
               </button>
               <button
                 type="button"
@@ -110,26 +112,20 @@
                 }"
                 (click)="theme = 'dark'; applyTheme()"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  class="h-4 w-4 fill-current"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M20.5 14.5A7.5 7.5 0 0 1 9.5 3.5a.75.75 0 0 0-.96-.96A9.5 9.5 0 1 0 21.46 15.46a.75.75 0 0 0-.96-.96Z"
-                  />
-                </svg>
+                <app-hero-icon name="moon"></app-hero-icon>
               </button>
             </div>
 
             <button
-              class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
+              <app-hero-icon name="arrow-down-tray"></app-hero-icon>
               Export
             </button>
             <button
-              class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500"
+              class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500"
             >
+              <app-hero-icon name="plus"></app-hero-icon>
               New entry
             </button>
           </div>

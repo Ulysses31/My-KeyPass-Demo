@@ -11,7 +11,8 @@
     "start:api": "node api/index.js",
     "start:server": "node server.js",
     "start:static": "http-server ./data -p 4000 -c-1",
-    "start:all": "concurrently -k -n server,api,desktop -c auto \"npm run start:server\" \"npm run start:api\" \"npm run start:desktop\""
+    "start:desktop-all": "concurrently -k -n server,api,desktop -c auto \"npm run start:server\" \"npm run start:api\" \"npm run start:desktop\"",
+    "start:web-all": "concurrently -k -n server,api,web -c auto \"npm run start:server\" \"npm run start:api\" \"npm run start:web\""
   },
   "dependencies": {
     "@angular/animations": "^18.2.0",
