@@ -5,6 +5,7 @@ const path = require('path');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
+const apiDelayMs = 3000;
 const dataDir = path.join(__dirname, '..', 'data');
 
 const resourceMap = {
@@ -19,6 +20,11 @@ const idFieldMap = {
 
 app.use(cors());
 app.use(express.json());
+
+// Simulate network latency for all API endpoints.
+app.use('/api', (_req, _res, next) => {
+  setTimeout(next, apiDelayMs);
+});
 
 const readJsonFile = (fileName) => {
   const filePath = path.join(dataDir, fileName);

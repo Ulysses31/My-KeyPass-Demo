@@ -8,9 +8,25 @@
   </div>
 
   <section
-    *ngIf="category as selectedCategory; else loadingState"
+    *ngIf="errorMessage"
+    class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+    {{ errorMessage }}
+  </section>
+
+  <section
+    *ngIf="successMessage"
+    class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
+    {{ successMessage }}
+  </section>
+
+  <section
+    *ngIf="!isLoading && category; else loadingState"
     class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-    <form class="grid gap-5 md:grid-cols-2" autocomplete="off">
+    <form
+      [formGroup]="categoryForm"
+      (ngSubmit)="onSubmit()"
+      class="grid gap-5 md:grid-cols-2"
+      autocomplete="off">
       <div class="space-y-2">
         <label
           for="categoryId"
@@ -19,10 +35,9 @@
         </label>
         <input
           id="categoryId"
-          type="number"
-          [value]="selectedCategory.CategoryID"
+          type="text"
+          formControlName="CategoryID"
           readonly
-          disabled
           class="dark:disabled:bg-slate-700 w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
       </div>
 
@@ -35,8 +50,14 @@
         <input
           id="name"
           type="text"
-          [value]="selectedCategory.Name"
+          formControlName="Name"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
+
+        <p
+          *ngIf="categoryForm.controls.Name.invalid && categoryForm.controls.Name.touched"
+          class="text-sm text-rose-600 dark:text-rose-300">
+          Name is required and must be between 2 and 60 characters.
+        </p>
       </div>
 
       <div class="space-y-2 md:col-span-2">
@@ -47,10 +68,18 @@
         </label>
         <textarea
           id="description"
+          formControlName="Description"
           rows="4"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700"
-          >{{ selectedCategory.Description }}</textarea
-        >
+          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700"></textarea>
+
+        <p
+          *ngIf="
+            categoryForm.controls.Description.invalid &&
+            categoryForm.controls.Description.touched
+          "
+          class="text-sm text-rose-600 dark:text-rose-300">
+          Description cannot exceed 250 characters.
+        </p>
       </div>
 
       <div class="space-y-2 md:col-span-2">
@@ -62,8 +91,36 @@
         <input
           id="nameWithBadge"
           type="text"
-          [value]="selectedCategory.NameWithBadge"
+          formControlName="NameWithBadge"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
+
+        <p
+          *ngIf="
+            categoryForm.controls.NameWithBadge.invalid &&
+            categoryForm.controls.NameWithBadge.touched
+          "
+          class="text-sm text-rose-600 dark:text-rose-300">
+          Name with badge is required and cannot exceed 80 characters.
+        </p>
+      </div>
+
+      <div class="md:col-span-2 flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="onDelete()"
+          [disabled]="isDeleting || isSaving"
+          class="inline-flex items-center rounded-xl border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-700 dark:bg-transparent dark:text-rose-300 dark:hover:bg-rose-950/30">
+          {{ isDeleting ? 'Deleting...' : 'Delete' }}
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="
+            categoryForm.invalid || categoryForm.pristine || isSaving || isDeleting
+          "
+          class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
       </div>
     </form>
   </section>

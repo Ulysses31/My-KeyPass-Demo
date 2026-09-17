@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 
@@ -15,10 +16,20 @@ import { CategoryDto } from '../../../shared/dto/category-dto';
 export class CategoriesComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
   router: Router = inject(Router);
+  route: ActivatedRoute = inject(ActivatedRoute);
+  destroyRef: DestroyRef = inject(DestroyRef);
 
   categories: CategoryDto[] = [];
+  successMessage = '';
 
   ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.successMessage =
+          params.get('deleted') === '1' ? 'Category deleted successfully.' : '';
+      });
+
     this.getCategories();
   }
 

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map, tap } from 'rxjs/operators';
 import { RecordDto } from '../../../shared/dto/record-dto';
 
@@ -14,11 +15,21 @@ import { RecordDto } from '../../../shared/dto/record-dto';
 export class RowsComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
   router: Router = inject(Router);
+  route: ActivatedRoute = inject(ActivatedRoute);
+  destroyRef: DestroyRef = inject(DestroyRef);
 
   records: any[] = [];
   categories: any[] = [];
+  successMessage = '';
 
   ngOnInit(): void {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.successMessage =
+          params.get('deleted') === '1' ? 'Row deleted successfully.' : '';
+      });
+
     // this.getRecords();
     this.getData();
   }

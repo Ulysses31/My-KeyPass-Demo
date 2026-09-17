@@ -7,6 +7,12 @@
     </p>
   </div>
 
+  <section
+    *ngIf="successMessage"
+    class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
+    {{ successMessage }}
+  </section>
+
   <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     <article
       *ngFor="let category of categories"
