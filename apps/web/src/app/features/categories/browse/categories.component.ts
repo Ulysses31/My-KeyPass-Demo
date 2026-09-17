@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { catchError, EMPTY, finalize, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 
 @Component({
@@ -20,6 +20,8 @@ export class CategoriesComponent implements OnInit {
   destroyRef: DestroyRef = inject(DestroyRef);
 
   categories: CategoryDto[] = [];
+  isLoading = true;
+  errorMessage = '';
   successMessage = '';
 
   ngOnInit(): void {
@@ -34,12 +36,22 @@ export class CategoriesComponent implements OnInit {
   }
 
   private getCategories(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.httpService
       .get<CategoryDto[]>('http://localhost:4200/api/categories')
       .pipe(
         tap((response: CategoryDto[]) => {
-          // console.log('Categories response:', response);
           this.categories = response;
+        }),
+        catchError(() => {
+          this.categories = [];
+          this.errorMessage = 'Unable to load categories.';
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.isLoading = false;
         })
       )
       .subscribe();

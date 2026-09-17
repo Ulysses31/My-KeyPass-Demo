@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, EMPTY, finalize } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { RecordDto } from '../../../shared/dto/record-dto';
 
@@ -20,6 +21,8 @@ export class RowsComponent implements OnInit {
 
   records: any[] = [];
   categories: any[] = [];
+  isLoading = true;
+  errorMessage = '';
   successMessage = '';
 
   ngOnInit(): void {
@@ -35,11 +38,13 @@ export class RowsComponent implements OnInit {
   }
 
   private getData(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.httpService
       .get<{ rows: any[]; categories: any[] }>('http://localhost:4200/api/data')
       .pipe(
         map((response: { rows: any[]; categories: any[] }) => {
-          // console.log('Data response:', response.rows);
           for (const record of response.rows) {
             const category = response.categories.find(
               (cat) => cat.CategoryID === record.CategoryID
@@ -52,8 +57,15 @@ export class RowsComponent implements OnInit {
           return response.rows;
         }),
         tap((records: any[]) => {
-          // console.log(records);
           this.records = records;
+        }),
+        catchError(() => {
+          this.records = [];
+          this.errorMessage = 'Unable to load rows.';
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.isLoading = false;
         })
       )
       .subscribe();
