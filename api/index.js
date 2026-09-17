@@ -1,20 +1,20 @@
-const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+const express = require('express');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
-const dataDir = path.join(__dirname, "..", "data");
+const dataDir = path.join(__dirname, '..', 'data');
 
 const resourceMap = {
-  rows: "rows.json",
-  categories: "categories.json",
+  rows: 'rows.json',
+  categories: 'categories.json'
 };
 
 const idFieldMap = {
-  rows: "RecordID",
-  categories: "CategoryID",
+  rows: 'RecordID',
+  categories: 'CategoryID'
 };
 
 app.use(cors());
@@ -27,7 +27,7 @@ const readJsonFile = (fileName) => {
     return [];
   }
 
-  const raw = fs.readFileSync(filePath, "utf8");
+  const raw = fs.readFileSync(filePath, 'utf8');
 
   try {
     const parsed = JSON.parse(raw);
@@ -39,14 +39,14 @@ const readJsonFile = (fileName) => {
 
 const writeJsonFile = (fileName, data) => {
   const filePath = path.join(dataDir, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 };
 
 const getResourceFile = (resource) => {
   const fileName = resourceMap[resource];
 
   if (!fileName) {
-    throw new Error("Unsupported resource");
+    throw new Error('Unsupported resource');
   }
 
   return fileName;
@@ -57,18 +57,18 @@ const resolveNextId = (items, fieldName) => {
     .map((item) => Number(item[fieldName]))
     .filter((value) => !Number.isNaN(value));
 
-  return ids.length ? String(Math.max(...ids) + 1) : "1";
+  return ids.length ? String(Math.max(...ids) + 1) : '1';
 };
 
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, service: "api", message: "Express API is running" });
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, service: 'api', message: 'Express API is running' });
 });
 
-app.get("/api/data", (_req, res) => {
+app.get('/api/data', (_req, res) => {
   try {
     const data = {
       rows: readJsonFile(resourceMap.rows),
-      categories: readJsonFile(resourceMap.categories),
+      categories: readJsonFile(resourceMap.categories)
     };
 
     res.json(data);
@@ -77,7 +77,7 @@ app.get("/api/data", (_req, res) => {
   }
 });
 
-app.get("/api/:resource", (req, res) => {
+app.get('/api/:resource', (req, res) => {
   try {
     const fileName = getResourceFile(req.params.resource);
     const items = readJsonFile(fileName);
@@ -87,19 +87,25 @@ app.get("/api/:resource", (req, res) => {
   }
 });
 
-app.get("/api/:resource/:id", (req, res) => {
+app.get('/api/:resource/:id', (req, res) => {
   try {
+    let categories = null;
     const fileName = getResourceFile(req.params.resource);
     const idField = idFieldMap[req.params.resource];
     const items = readJsonFile(fileName);
-    const item = items.find(
-      (entry) => String(entry[idField]) === String(req.params.id),
-    );
+
+    const item = items.find((entry) => String(entry[idField]) === String(req.params.id));
+
+    // Get category for the row item
+    if (fileName == 'rows.json') {
+      categories = readJsonFile(resourceMap.categories);
+      item.Category = categories.find(
+        (category) => String(category.CategoryID) === String(item.CategoryID)
+      );
+    }
 
     if (!item) {
-      return res
-        .status(404)
-        .json({ error: `${req.params.resource} not found` });
+      return res.status(404).json({ error: `${req.params.resource} not found` });
     }
 
     return res.json(item);
@@ -108,15 +114,15 @@ app.get("/api/:resource/:id", (req, res) => {
   }
 });
 
-app.post("/api/:resource", (req, res) => {
+app.post('/api/:resource', (req, res) => {
   try {
     const fileName = getResourceFile(req.params.resource);
     const idField = idFieldMap[req.params.resource];
     const items = readJsonFile(fileName);
     const payload = req.body || {};
 
-    if (!payload || typeof payload !== "object") {
-      return res.status(400).json({ error: "Request body must be an object" });
+    if (!payload || typeof payload !== 'object') {
+      return res.status(400).json({ error: 'Request body must be an object' });
     }
 
     const nextId = payload[idField] ?? resolveNextId(items, idField);
@@ -131,19 +137,17 @@ app.post("/api/:resource", (req, res) => {
   }
 });
 
-app.put("/api/:resource/:id", (req, res) => {
+app.put('/api/:resource/:id', (req, res) => {
   try {
     const fileName = getResourceFile(req.params.resource);
     const idField = idFieldMap[req.params.resource];
     const items = readJsonFile(fileName);
     const itemIndex = items.findIndex(
-      (entry) => String(entry[idField]) === String(req.params.id),
+      (entry) => String(entry[idField]) === String(req.params.id)
     );
 
     if (itemIndex === -1) {
-      return res
-        .status(404)
-        .json({ error: `${req.params.resource} not found` });
+      return res.status(404).json({ error: `${req.params.resource} not found` });
     }
 
     const payload = req.body || {};
@@ -157,26 +161,24 @@ app.put("/api/:resource/:id", (req, res) => {
   }
 });
 
-app.patch("/api/:resource/:id", (req, res) => {
+app.patch('/api/:resource/:id', (req, res) => {
   try {
     const fileName = getResourceFile(req.params.resource);
     const idField = idFieldMap[req.params.resource];
     const items = readJsonFile(fileName);
     const itemIndex = items.findIndex(
-      (entry) => String(entry[idField]) === String(req.params.id),
+      (entry) => String(entry[idField]) === String(req.params.id)
     );
 
     if (itemIndex === -1) {
-      return res
-        .status(404)
-        .json({ error: `${req.params.resource} not found` });
+      return res.status(404).json({ error: `${req.params.resource} not found` });
     }
 
     const payload = req.body || {};
     const updatedItem = {
       ...items[itemIndex],
       ...payload,
-      [idField]: String(req.params.id),
+      [idField]: String(req.params.id)
     };
     items[itemIndex] = updatedItem;
     writeJsonFile(fileName, items);
@@ -187,19 +189,17 @@ app.patch("/api/:resource/:id", (req, res) => {
   }
 });
 
-app.delete("/api/:resource/:id", (req, res) => {
+app.delete('/api/:resource/:id', (req, res) => {
   try {
     const fileName = getResourceFile(req.params.resource);
     const idField = idFieldMap[req.params.resource];
     const items = readJsonFile(fileName);
     const itemIndex = items.findIndex(
-      (entry) => String(entry[idField]) === String(req.params.id),
+      (entry) => String(entry[idField]) === String(req.params.id)
     );
 
     if (itemIndex === -1) {
-      return res
-        .status(404)
-        .json({ error: `${req.params.resource} not found` });
+      return res.status(404).json({ error: `${req.params.resource} not found` });
     }
 
     const [deletedItem] = items.splice(itemIndex, 1);

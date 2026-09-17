@@ -22,7 +22,8 @@
           type="number"
           [value]="selectedRecord.RecordID"
           readonly
-          class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
+          disabled
+          class="dark:disabled:bg-slate-700 w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
       </div>
 
       <div class="space-y-2">
@@ -91,7 +92,7 @@
         >
       </div>
 
-      <div class="space-y-2">
+      <!-- <div class="space-y-2">
         <label
           for="categoryId"
           class="block text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -102,13 +103,13 @@
           type="number"
           [value]="selectedRecord.CategoryID"
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
-      </div>
+      </div> -->
 
       <div class="space-y-2">
         <label
           for="categoryName"
           class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Category Name
+          Category
         </label>
         <input
           id="categoryName"
