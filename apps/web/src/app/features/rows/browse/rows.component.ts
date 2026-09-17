@@ -29,8 +29,16 @@ export class RowsComponent implements OnInit {
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
-        this.successMessage =
-          params.get('deleted') === '1' ? 'Row deleted successfully.' : '';
+        this.successMessage = '';
+
+        if (params.get('recycled') === '1') {
+          this.successMessage = 'Row moved to Recycle Bin successfully.';
+          return;
+        }
+
+        if (params.get('deleted') === '1') {
+          this.successMessage = 'Row deleted successfully.';
+        }
       });
 
     // this.getRecords();

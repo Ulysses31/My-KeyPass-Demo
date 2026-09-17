@@ -175,15 +175,17 @@ export class RowsDetailsComponent implements OnInit {
     this.successMessage = '';
 
     this.httpService
-      .delete<{ deleted: boolean }>(`http://localhost:4200/api/rows/${recordId}`)
+      .patch<RecordDto>(`http://localhost:4200/api/rows/${recordId}`, {
+        CategoryID: '8'
+      })
       .pipe(
         tap(() => {
           this.router.navigate(['/rows'], {
-            queryParams: { deleted: '1' }
+            queryParams: { recycled: '1' }
           });
         }),
         catchError(() => {
-          this.errorMessage = 'Unable to delete row.';
+          this.errorMessage = 'Unable to move row to Recycle Bin.';
           return EMPTY;
         }),
         finalize(() => {
