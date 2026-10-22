@@ -4,8 +4,14 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
+import { CategoryDto } from '../../../shared/dto/category-dto';
 import { RecordDto } from '../../../shared/dto/record-dto';
+
+interface RowCategoryOption {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-rows-details',
@@ -25,6 +31,8 @@ export class RowsDetailsComponent implements OnInit {
   isDeleting = false;
   errorMessage = '';
   successMessage = '';
+  rowCategoryOptions: RowCategoryOption[] = [];
+  categories: CategoryDto[] = [];
 
   rowForm = new FormGroup({
     RecordID: new FormControl({ value: '', disabled: true }, { nonNullable: true }),
@@ -52,10 +60,37 @@ export class RowsDetailsComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.maxLength(500)]
     }),
+    CategoryID: new FormControl({ value: '', disabled: false }, { nonNullable: true }),
     CategoryName: new FormControl({ value: '', disabled: true }, { nonNullable: true })
   });
 
   ngOnInit(): void {
+    console.log('ngOnInit called');
+    this.isLoading = true;
+    this.httpService
+      .get<CategoryDto[]>('http://localhost:4200/api/categories')
+      .pipe(
+        map((response: CategoryDto[]) => {
+          this.categories = response;
+          this.rowCategoryOptions = response
+            .map((cat) => ({
+              id: String(cat.CategoryID ?? ''),
+              name: String(cat.Name ?? '')
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+          //return response;
+        }),
+        catchError(() => {
+          this.rowCategoryOptions = [];
+          this.errorMessage = 'Unable to load categories.';
+          return EMPTY;
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe();
+
     this.actRouter.params
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -85,6 +120,7 @@ export class RowsDetailsComponent implements OnInit {
                     Password: response.Password ?? '',
                     URL: response.URL ?? '',
                     Notes: response.Notes ?? '',
+                    CategoryID: response.CategoryID.toString(),
                     CategoryName: response.Category?.Name ?? ''
                   },
                   { emitEvent: false }
@@ -117,7 +153,8 @@ export class RowsDetailsComponent implements OnInit {
 
     const recordId = String(this.record.RecordID);
     const currentCategory = this.record.Category;
-    const currentCategoryName = currentCategory?.Name ?? '';
+    // const currentCategoryName = currentCategory?.Name ?? '';
+    // const currentCategoryId = this.record.CategoryID;
     this.isSaving = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -129,14 +166,21 @@ export class RowsDetailsComponent implements OnInit {
         Password: this.rowForm.controls.Password.value.trim(),
         URL: this.rowForm.controls.URL.value.trim(),
         Notes: this.rowForm.controls.Notes.value.trim(),
-        CategoryID: this.record.CategoryID
+        CategoryID: this.rowForm.controls.CategoryID.value
+        // Category:
+        //   this.categories.find(
+        //     (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
+        //   ) ?? null
       })
       .pipe(
         tap((updatedRecord) => {
           this.record = {
             ...updatedRecord,
-            Category: currentCategory
+            Category: this.categories.find(
+              (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
+            )!
           };
+          console.log(this.record);
 
           this.rowForm.reset(
             {
@@ -146,7 +190,8 @@ export class RowsDetailsComponent implements OnInit {
               Password: updatedRecord.Password ?? '',
               URL: updatedRecord.URL ?? '',
               Notes: updatedRecord.Notes ?? '',
-              CategoryName: currentCategoryName
+              CategoryName: this.record.Category.Name ?? '',
+              CategoryID: this.record.Category.CategoryID?.toString() ?? ''
             },
             { emitEvent: false }
           );
@@ -193,5 +238,9 @@ export class RowsDetailsComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  applyCategoryFilter(categoryId: string): void {
+    this.rowForm.controls.CategoryID.setValue(categoryId);
   }
 }

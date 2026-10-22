@@ -5,7 +5,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { RecordDto } from '../../../shared/dto/record-dto';
+
+interface RowCategoryOption {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-rows',
@@ -20,10 +24,13 @@ export class RowsComponent implements OnInit {
   destroyRef: DestroyRef = inject(DestroyRef);
 
   records: any[] = [];
+  allRecords: any[] = [];
   categories: any[] = [];
   isLoading = true;
   errorMessage = '';
   successMessage = '';
+  selectedRowCategoryId = 'all';
+  rowCategoryOptions: RowCategoryOption[] = [];
 
   ngOnInit(): void {
     this.route.queryParamMap
@@ -41,7 +48,6 @@ export class RowsComponent implements OnInit {
         }
       });
 
-    // this.getRecords();
     this.getData();
   }
 
@@ -53,6 +59,13 @@ export class RowsComponent implements OnInit {
       .get<{ rows: any[]; categories: any[] }>('http://localhost:4200/api/data')
       .pipe(
         map((response: { rows: any[]; categories: any[] }) => {
+          this.rowCategoryOptions = response.categories
+            .map((cat) => ({
+              id: String(cat.CategoryID ?? ''),
+              name: String(cat.Name ?? '')
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+
           for (const record of response.rows) {
             const category = response.categories.find(
               (cat) => cat.CategoryID === record.CategoryID
@@ -61,14 +74,18 @@ export class RowsComponent implements OnInit {
               record.Category = category;
             }
           }
-          response.rows.sort((a, b) => a.CategoryID.localeCompare(b.CategoryID));
+          response.rows.sort((a, b) =>
+            String(a.CategoryID ?? '').localeCompare(String(b.CategoryID ?? ''))
+          );
           return response.rows;
         }),
         tap((records: any[]) => {
           this.records = records;
+          this.allRecords = records;
         }),
         catchError(() => {
           this.records = [];
+          this.allRecords = [];
           this.errorMessage = 'Unable to load rows.';
           return EMPTY;
         }),
@@ -79,19 +96,18 @@ export class RowsComponent implements OnInit {
       .subscribe();
   }
 
-  private getRecords(): void {
-    this.httpService
-      .get<RecordDto[]>('http://localhost:4200/api/rows')
-      .pipe(
-        tap((response: RecordDto[]) => {
-          // console.log('Records response:', response);
-          this.records = response;
-        })
-      )
-      .subscribe();
-  }
-
   getSelected(id: string): void {
     this.router.navigate(['/rows', id]);
+  }
+
+  applyCategoryFilter(categoryId: string): void {
+    this.selectedRowCategoryId = categoryId;
+
+    if (categoryId === 'all') {
+      this.records = [...this.allRecords];
+      return;
+    }
+
+    this.records = this.allRecords.filter((row) => row.CategoryID === categoryId);
   }
 }
