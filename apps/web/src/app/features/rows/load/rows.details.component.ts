@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 import { RecordDto } from '../../../shared/dto/record-dto';
+import { CryptoService } from '../../../shared/services/encrypt.decrypt';
 
 interface RowCategoryOption {
   id: string;
@@ -21,16 +22,21 @@ interface RowCategoryOption {
 })
 export class RowsDetailsComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
+  cryptoService: CryptoService = inject(CryptoService);
   actRouter: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
   destroyRef: DestroyRef = inject(DestroyRef);
 
   record: RecordDto | null = null;
+  recordPassword: string = '';
+  recordEncryptedPassword: string = '';
   isLoading = true;
   isSaving = false;
   isDeleting = false;
   errorMessage = '';
   successMessage = '';
+  masterPassword = '12345678'; // Replace with actual master password
+
   rowCategoryOptions: RowCategoryOption[] = [];
   categories: CategoryDto[] = [];
 
@@ -52,6 +58,12 @@ export class RowsDetailsComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(150)]
     }),
+    // EncryptedPassword: new FormControl(
+    //   { value: '', disabled: true },
+    //   {
+    //     nonNullable: true
+    //   }
+    // ),
     URL: new FormControl('', {
       nonNullable: true,
       validators: [Validators.maxLength(300)]
@@ -65,7 +77,7 @@ export class RowsDetailsComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    console.log('ngOnInit called');
+    //* Load categories */
     this.isLoading = true;
     this.httpService
       .get<CategoryDto[]>('http://localhost:4200/api/categories')
@@ -91,6 +103,7 @@ export class RowsDetailsComponent implements OnInit {
       )
       .subscribe();
 
+    //* Load row details */
     this.actRouter.params
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -112,12 +125,16 @@ export class RowsDetailsComponent implements OnInit {
             .pipe(
               tap((response) => {
                 this.record = response;
+                this.recordPassword = response.Password ?? '';
+                this.recordEncryptedPassword = response.EncryptedPassword ?? '';
                 this.rowForm.reset(
                   {
                     RecordID: String(response.RecordID ?? ''),
                     Title: response.Title ?? '',
                     Username: response.Username ?? '',
-                    Password: response.Password ?? '',
+                    // Password: response.Password ?? '',
+                    Password: '*'.repeat(this.recordPassword.length),
+                    // EncryptedPassword: response.EncryptedPassword ?? '',
                     URL: response.URL ?? '',
                     Notes: response.Notes ?? '',
                     CategoryID: response.CategoryID.toString(),
@@ -141,7 +158,7 @@ export class RowsDetailsComponent implements OnInit {
       .subscribe();
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.record) {
       return;
     }
@@ -151,10 +168,20 @@ export class RowsDetailsComponent implements OnInit {
       return;
     }
 
+    let encryptedPassword: string = '';
+    await this.encryptPassword(this.rowForm.controls.Password.value.trim()).then(
+      (res) => (encryptedPassword = res.encryptedPassword)
+    );
+
+    // let decryptedPassword = '';
+    // await this.decryptPassword(encryptedPassword).then(
+    //   (res) => (decryptedPassword = res.decryptedPassword)
+    // );
+
+    // console.log(encryptedPassword);
+    // console.log(decryptedPassword);
+
     const recordId = String(this.record.RecordID);
-    const currentCategory = this.record.Category;
-    // const currentCategoryName = currentCategory?.Name ?? '';
-    // const currentCategoryId = this.record.CategoryID;
     this.isSaving = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -164,13 +191,10 @@ export class RowsDetailsComponent implements OnInit {
         Title: this.rowForm.controls.Title.value.trim(),
         Username: this.rowForm.controls.Username.value.trim(),
         Password: this.rowForm.controls.Password.value.trim(),
+        EncryptedPassword: encryptedPassword.trim(),
         URL: this.rowForm.controls.URL.value.trim(),
         Notes: this.rowForm.controls.Notes.value.trim(),
         CategoryID: this.rowForm.controls.CategoryID.value
-        // Category:
-        //   this.categories.find(
-        //     (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
-        //   ) ?? null
       })
       .pipe(
         tap((updatedRecord) => {
@@ -180,14 +204,14 @@ export class RowsDetailsComponent implements OnInit {
               (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
             )!
           };
-          console.log(this.record);
 
           this.rowForm.reset(
             {
               RecordID: String(updatedRecord.RecordID ?? ''),
               Title: updatedRecord.Title ?? '',
               Username: updatedRecord.Username ?? '',
-              Password: updatedRecord.Password ?? '',
+              Password: '*'.repeat(updatedRecord.Password?.length ?? 0),
+              // EncryptedPassword: updatedRecord.EncryptedPassword ?? '',
               URL: updatedRecord.URL ?? '',
               Notes: updatedRecord.Notes ?? '',
               CategoryName: this.record.Category.Name ?? '',
@@ -242,5 +266,25 @@ export class RowsDetailsComponent implements OnInit {
 
   applyCategoryFilter(categoryId: string): void {
     this.rowForm.controls.CategoryID.setValue(categoryId);
+  }
+
+  private async encryptPassword(
+    password: string
+  ): Promise<{ encryptedPassword: string }> {
+    const encryptedPassword = await this.cryptoService.encryptString(
+      password,
+      this.masterPassword
+    );
+    return { encryptedPassword };
+  }
+
+  private async decryptPassword(
+    password: string
+  ): Promise<{ decryptedPassword: string }> {
+    const decryptedPassword = await this.cryptoService.decryptString(
+      password,
+      this.masterPassword
+    );
+    return { decryptedPassword };
   }
 }

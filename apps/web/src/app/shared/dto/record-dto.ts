@@ -5,9 +5,9 @@ export class RecordDto {
   Title!: string;
   Username!: string;
   Password!: string;
+  EncryptedPassword!: string;
   URL!: string;
   Notes!: string;
   CategoryID!: number;
   Category!: CategoryDto;
 }
-

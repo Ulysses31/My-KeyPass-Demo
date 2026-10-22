@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { catchError, finalize, map, of, tap } from 'rxjs';
+import { RecordDto } from '../../shared/dto/record-dto';
+import { HeroIconComponent } from '../../shared/hero-icon/hero-icon.component';
+import { CryptoService } from '../../shared/services/encrypt.decrypt';
 
 interface SummaryCard {
   label: string;
@@ -15,6 +18,7 @@ interface DashboardRow {
   Title: string;
   Username: string;
   Password: string;
+  EncryptedPassword: string;
   URL: string;
   CategoryID: string;
   CategoryName: string;
@@ -28,11 +32,12 @@ interface RowCategoryOption {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HeroIconComponent],
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
+  cryptoService: CryptoService = inject(CryptoService);
 
   summaryCards: SummaryCard[] = [
     {
@@ -59,9 +64,12 @@ export class DashboardComponent implements OnInit {
   rows: DashboardRow[] = [];
   allRows: DashboardRow[] = [];
   rowCategoryOptions: RowCategoryOption[] = [];
+  selectedRowTitle = '';
   selectedRowCategoryId = 'all';
   isRowsLoading = true;
   rowsErrorMessage = '';
+  encryptedPassword: string = '';
+  masterPassword = '12345678'; // Replace with actual master password
 
   categories = [
     { name: 'Banking', count: 12, color: 'bg-indigo-100 text-indigo-700' },
@@ -74,7 +82,7 @@ export class DashboardComponent implements OnInit {
     this.getRows();
   }
 
-  private getRows(): void {
+  private async getRows(): Promise<void> {
     this.isRowsLoading = true;
     this.rowsErrorMessage = '';
 
@@ -90,7 +98,26 @@ export class DashboardComponent implements OnInit {
             .filter((category) => category.id && category.name)
             .sort((a, b) => a.name.localeCompare(b.name));
 
-          const rows = response.rows.map((row) => {
+          const rows = response.rows.map((row: RecordDto) => {
+            if (!row.EncryptedPassword) {
+              if (row.Password.length > 0) {
+                this.cryptoService
+                  .encryptString(row.Password, this.masterPassword)
+                  .then((encrypted) => {
+                    row.EncryptedPassword = encrypted;
+                    this.httpService
+                      .patch<RecordDto>(
+                        `http://localhost:4200/api/rows/${row.RecordID}`,
+                        {
+                          EncryptedPassword: row.EncryptedPassword
+                        }
+                      )
+                      .subscribe();
+                    console.log('Created missing encrypted password for row:', row);
+                  });
+              }
+            }
+
             const category = response.categories.find(
               (cat) => String(cat.CategoryID) === String(row.CategoryID)
             );
@@ -99,7 +126,9 @@ export class DashboardComponent implements OnInit {
               RecordID: String(row.RecordID ?? ''),
               Title: row.Title ?? '',
               Username: row.Username ?? '',
-              Password: row.Password ?? '',
+              // Password: row.Password ?? '',
+              Password: '*'.repeat(row.Password?.length ?? 0),
+              EncryptedPassword: row.EncryptedPassword ?? '',
               URL: row.URL ?? '',
               CategoryID: String(row.CategoryID ?? ''),
               CategoryName: category?.Name ?? '-'
@@ -133,11 +162,68 @@ export class DashboardComponent implements OnInit {
   applyCategoryFilter(categoryId: string): void {
     this.selectedRowCategoryId = categoryId;
 
-    if (categoryId === 'all') {
+    if (categoryId === 'all' && this.selectedRowTitle.length === 0) {
       this.rows = [...this.allRows];
       return;
     }
 
-    this.rows = this.allRows.filter((row) => row.CategoryID === categoryId);
+    if (this.selectedRowTitle.length > 0) {
+      if (categoryId === 'all') {
+        this.rows = this.allRows.filter((row) =>
+          row.Title.toLowerCase().includes(this.selectedRowTitle.toLowerCase())
+        );
+      } else {
+        this.rows = this.allRows.filter(
+          (row) =>
+            row.CategoryID === categoryId &&
+            row.Title.toLowerCase().includes(this.selectedRowTitle.toLowerCase())
+        );
+      }
+    } else {
+      this.rows = this.allRows.filter((row) => row.CategoryID === categoryId);
+    }
+  }
+
+  applyTitleFilter(title: string): void {
+    this.selectedRowTitle = title;
+
+    if (!title) {
+      if (this.selectedRowCategoryId === 'all') {
+        this.rows = [...this.allRows];
+      } else {
+        this.rows = this.allRows.filter(
+          (row) => row.CategoryID === this.selectedRowCategoryId
+        );
+      }
+      return;
+    }
+
+    if (this.selectedRowCategoryId === 'all') {
+      this.rows = this.allRows.filter((row) =>
+        row.Title.toLowerCase().includes(title.toLowerCase())
+      );
+    } else {
+      this.rows = this.allRows.filter(
+        (row) =>
+          row.CategoryID === this.selectedRowCategoryId &&
+          row.Title.toLowerCase().includes(title.toLowerCase())
+      );
+    }
+  }
+
+  async copyPassword(password: string): Promise<void> {
+    const decryptedPassword = await this.cryptoService.decryptString(
+      password,
+      this.masterPassword
+    );
+
+    navigator.clipboard.writeText(decryptedPassword).then(
+      () => {
+        console.log('Password copied to clipboard');
+      },
+      (err) => {
+        console.error('Failed to copy password: ', err);
+      }
+    );
   }
 }

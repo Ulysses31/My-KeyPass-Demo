@@ -30,6 +30,7 @@ export class RowsComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   selectedRowCategoryId = 'all';
+  selectedRowTitle = '';
   rowCategoryOptions: RowCategoryOption[] = [];
 
   ngOnInit(): void {
@@ -103,11 +104,52 @@ export class RowsComponent implements OnInit {
   applyCategoryFilter(categoryId: string): void {
     this.selectedRowCategoryId = categoryId;
 
-    if (categoryId === 'all') {
+    if (categoryId === 'all' && this.selectedRowTitle.length === 0) {
       this.records = [...this.allRecords];
       return;
     }
 
-    this.records = this.allRecords.filter((row) => row.CategoryID === categoryId);
+    if (this.selectedRowTitle.length > 0) {
+      if (categoryId === 'all') {
+        this.records = this.allRecords.filter((row) =>
+          row.Title.toLowerCase().includes(this.selectedRowTitle.toLowerCase())
+        );
+      } else {
+        this.records = this.allRecords.filter(
+          (row) =>
+            row.CategoryID === categoryId &&
+            row.Title.toLowerCase().includes(this.selectedRowTitle.toLowerCase())
+        );
+      }
+    } else {
+      this.records = this.allRecords.filter((row) => row.CategoryID === categoryId);
+    }
+  }
+
+  applyTitleFilter(title: string): void {
+    this.selectedRowTitle = title;
+
+    if (!title) {
+      if (this.selectedRowCategoryId === 'all') {
+        this.records = [...this.allRecords];
+      } else {
+        this.records = this.allRecords.filter(
+          (row) => row.CategoryID === this.selectedRowCategoryId
+        );
+      }
+      return;
+    }
+
+    if (this.selectedRowCategoryId === 'all') {
+      this.records = this.allRecords.filter((row) =>
+        row.Title.toLowerCase().includes(title.toLowerCase())
+      );
+    } else {
+      this.records = this.allRecords.filter(
+        (row) =>
+          row.CategoryID === this.selectedRowCategoryId &&
+          row.Title.toLowerCase().includes(title.toLowerCase())
+      );
+    }
   }
 }
