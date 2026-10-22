@@ -1,7 +1,7 @@
 {
+  "exclude": ["dist", "out-tsc", "node_modules"],
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -20,7 +20,6 @@
     "lib": ["ES2022", "dom"]
   },
   "angularCompilerOptions": {
-    "enableIvy": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
