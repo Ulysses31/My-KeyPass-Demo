@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 
@@ -18,6 +19,7 @@ export class CategoriesComponent implements OnInit {
   router: Router = inject(Router);
   route: ActivatedRoute = inject(ActivatedRoute);
   destroyRef: DestroyRef = inject(DestroyRef);
+  toastr: ToastrService = inject(ToastrService);
 
   categories: CategoryDto[] = [];
   isLoading = true;
@@ -48,6 +50,7 @@ export class CategoriesComponent implements OnInit {
         catchError(() => {
           this.categories = [];
           this.errorMessage = 'Unable to load categories.';
+          this.toastr.error('Unable to load categories.');
           return EMPTY;
         }),
         finalize(() => {

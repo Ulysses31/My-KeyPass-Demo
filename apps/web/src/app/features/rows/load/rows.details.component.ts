@@ -4,6 +4,7 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 import { RecordDto } from '../../../shared/dto/record-dto';
@@ -26,6 +27,7 @@ export class RowsDetailsComponent implements OnInit {
   actRouter: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
   destroyRef: DestroyRef = inject(DestroyRef);
+  toastr: ToastrService = inject(ToastrService);
 
   record: RecordDto | null = null;
   recordPassword: string = '';
@@ -102,6 +104,7 @@ export class RowsDetailsComponent implements OnInit {
         catchError(() => {
           this.rowCategoryOptions = [];
           this.errorMessage = 'Unable to load categories.';
+          this.toastr.error('Unable to load categories.');
           return EMPTY;
         }),
         finalize(() => {
@@ -120,6 +123,7 @@ export class RowsDetailsComponent implements OnInit {
 
           if (!id || recordID < 0) {
             this.errorMessage = 'Invalid row id.';
+            this.toastr.error('Invalid row id.');
             this.isLoading = false;
             return EMPTY;
           }
@@ -191,6 +195,7 @@ export class RowsDetailsComponent implements OnInit {
                 catchError(() => {
                   this.record = null;
                   this.errorMessage = 'Unable to load row details.';
+                  this.toastr.error('Unable to load row details.');
                   return EMPTY;
                 }),
                 finalize(() => {
@@ -271,9 +276,11 @@ export class RowsDetailsComponent implements OnInit {
             );
             this.rowForm.markAsPristine();
             this.successMessage = 'Row created successfully.';
+            this.toastr.success('Row created successfully.');
           }),
           catchError(() => {
             this.errorMessage = 'Unable to create row.';
+            this.toastr.error('Unable to create row.');
             return EMPTY;
           }),
           finalize(() => {
@@ -324,9 +331,11 @@ export class RowsDetailsComponent implements OnInit {
             );
             this.rowForm.markAsPristine();
             this.successMessage = 'Row updated successfully.';
+            this.toastr.success('Row updated successfully.');
           }),
           catchError(() => {
             this.errorMessage = 'Unable to update row.';
+            this.toastr.error('Unable to update row.');
             return EMPTY;
           }),
           finalize(() => {
@@ -359,6 +368,7 @@ export class RowsDetailsComponent implements OnInit {
         }),
         catchError(() => {
           this.errorMessage = 'Unable to move row to Recycle Bin.';
+          this.toastr.error('Unable to move row to Recycle Bin.');
           return EMPTY;
         }),
         finalize(() => {

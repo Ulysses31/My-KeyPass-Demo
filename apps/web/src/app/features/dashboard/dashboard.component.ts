@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, finalize, map, of, tap } from 'rxjs';
 import { RecordDto } from '../../shared/dto/record-dto';
 import { HeroIconComponent } from '../../shared/hero-icon/hero-icon.component';
@@ -38,6 +39,7 @@ interface RowCategoryOption {
 export class DashboardComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
   cryptoService: CryptoService = inject(CryptoService);
+  toastr: ToastrService = inject(ToastrService);
 
   summaryCards: SummaryCard[] = [
     {
@@ -147,6 +149,7 @@ export class DashboardComponent implements OnInit {
           this.allRows = [];
           this.rows = [];
           this.rowsErrorMessage = 'Unable to load rows data.';
+          this.toastr.error('Unable to load rows data.');
           return of({
             rows: [] as DashboardRow[],
             categoryOptions: [] as RowCategoryOption[]
@@ -220,9 +223,11 @@ export class DashboardComponent implements OnInit {
     navigator.clipboard.writeText(decryptedPassword).then(
       () => {
         console.log('Password copied to clipboard');
+        this.toastr.success('Password copied to clipboard');
       },
       (err) => {
         console.error('Failed to copy password: ', err);
+        this.toastr.error('Failed to copy password');
       }
     );
   }

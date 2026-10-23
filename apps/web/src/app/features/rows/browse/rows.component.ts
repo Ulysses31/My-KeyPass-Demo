@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ export class RowsComponent implements OnInit {
   router: Router = inject(Router);
   route: ActivatedRoute = inject(ActivatedRoute);
   destroyRef: DestroyRef = inject(DestroyRef);
+  toastr: ToastrService = inject(ToastrService);
 
   records: any[] = [];
   allRecords: any[] = [];
@@ -41,11 +43,13 @@ export class RowsComponent implements OnInit {
 
         if (params.get('recycled') === '1') {
           this.successMessage = 'Row moved to Recycle Bin successfully.';
+          this.toastr.success('Row moved to Recycle Bin successfully.');
           return;
         }
 
         if (params.get('deleted') === '1') {
           this.successMessage = 'Row deleted successfully.';
+          this.toastr.success('Row deleted successfully.');
         }
       });
 
@@ -88,6 +92,7 @@ export class RowsComponent implements OnInit {
           this.records = [];
           this.allRecords = [];
           this.errorMessage = 'Unable to load rows.';
+          this.toastr.error('Unable to load rows.');
           return EMPTY;
         }),
         finalize(() => {

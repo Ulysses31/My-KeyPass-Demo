@@ -4,6 +4,7 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { catchError, EMPTY, finalize, switchMap, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 
@@ -19,6 +20,7 @@ export class CategoriesDetailsComponent implements OnInit {
   actRouter: ActivatedRoute = inject(ActivatedRoute);
   router: Router = inject(Router);
   destroyRef: DestroyRef = inject(DestroyRef);
+  toastr: ToastrService = inject(ToastrService);
 
   category: CategoryDto | null = null;
   isLoading = true;
@@ -57,6 +59,7 @@ export class CategoriesDetailsComponent implements OnInit {
 
           if (!id || categoryId < 0) {
             this.errorMessage = 'Invalid category id.';
+            this.toastr.error('Invalid category id.');
             this.isLoading = false;
             return EMPTY;
           }
@@ -112,6 +115,7 @@ export class CategoriesDetailsComponent implements OnInit {
                 catchError(() => {
                   this.category = null;
                   this.errorMessage = 'Unable to load category details.';
+                  this.toastr.error('Unable to load category details.');
                   return EMPTY;
                 }),
                 finalize(() => {
@@ -166,9 +170,11 @@ export class CategoriesDetailsComponent implements OnInit {
             );
             this.categoryForm.markAsPristine();
             this.successMessage = 'Category created successfully.';
+            this.toastr.success('Category created successfully.');
           }),
           catchError(() => {
             this.errorMessage = 'Unable to create category.';
+            this.toastr.error('Unable to create category.');
             return EMPTY;
           }),
           finalize(() => {
@@ -204,9 +210,11 @@ export class CategoriesDetailsComponent implements OnInit {
             );
             this.categoryForm.markAsPristine();
             this.successMessage = 'Category updated successfully.';
+            this.toastr.success('Category updated successfully.');
           }),
           catchError(() => {
             this.errorMessage = 'Unable to update category.';
+            this.toastr.error('Unable to update category.');
             return EMPTY;
           }),
           finalize(() => {
@@ -231,12 +239,14 @@ export class CategoriesDetailsComponent implements OnInit {
       .delete<{ deleted: boolean }>(`http://localhost:4200/api/categories/${categoryId}`)
       .pipe(
         tap(() => {
+          this.toastr.success('Category deleted successfully.');
           this.router.navigate(['/categories'], {
             queryParams: { deleted: '1' }
           });
         }),
         catchError(() => {
           this.errorMessage = 'Unable to delete category.';
+          this.toastr.error('Unable to delete category.');
           return EMPTY;
         }),
         finalize(() => {
