@@ -24,6 +24,7 @@ export class CategoriesDetailsComponent implements OnInit {
   isLoading = true;
   isSaving = false;
   isDeleting = false;
+  deleteToggle: boolean = false;
   errorMessage = '';
   successMessage = '';
 
@@ -37,10 +38,13 @@ export class CategoriesDetailsComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.maxLength(250)]
     }),
-    NameWithBadge: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.maxLength(80)]
-    })
+    NameWithBadge: new FormControl(
+      { value: '', disabled: true },
+      {
+        nonNullable: true,
+        validators: [Validators.required, Validators.maxLength(80)]
+      }
+    )
   });
 
   ngOnInit(): void {
@@ -49,42 +53,76 @@ export class CategoriesDetailsComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
         switchMap((params) => {
           const id = String(params['id'] ?? '');
+          const categoryId = Number(id);
 
-          if (!id || Number(id) <= 0) {
+          if (!id || categoryId < 0) {
             this.errorMessage = 'Invalid category id.';
             this.isLoading = false;
             return EMPTY;
           }
 
-          this.errorMessage = '';
-          this.successMessage = '';
-          this.isLoading = true;
-
-          return this.httpService
-            .get<CategoryDto>(`http://localhost:4200/api/categories/${id}`)
-            .pipe(
-              tap((response) => {
-                this.category = response;
-                this.categoryForm.reset(
-                  {
-                    CategoryID: String(response.CategoryID ?? ''),
-                    Name: response.Name ?? '',
-                    Description: response.Description ?? '',
-                    NameWithBadge: response.NameWithBadge ?? ''
-                  },
-                  { emitEvent: false }
-                );
-                this.categoryForm.markAsPristine();
-              }),
-              catchError(() => {
-                this.category = null;
-                this.errorMessage = 'Unable to load category details.';
-                return EMPTY;
-              }),
-              finalize(() => {
-                this.isLoading = false;
-              })
+          //** CREATE NEW */
+          if (categoryId === 0) {
+            this.deleteToggle = false;
+            this.errorMessage = '';
+            this.successMessage = '';
+            this.isLoading = false;
+            this.categoryForm.reset(
+              {
+                CategoryID: '0',
+                Name: '',
+                Description: '',
+                NameWithBadge: ''
+              },
+              { emitEvent: false }
             );
+            this.category = {
+              CategoryID: 0,
+              Name: '',
+              Description: '',
+              NameWithBadge: ''
+            };
+            this.categoryForm.markAsPristine();
+            return EMPTY;
+          }
+
+          //** EDIT */
+          if (categoryId > 0) {
+            this.deleteToggle = true;
+            this.errorMessage = '';
+            this.successMessage = '';
+            this.isLoading = true;
+
+            return this.httpService
+              .get<CategoryDto>(`http://localhost:4200/api/categories/${id}`)
+              .pipe(
+                tap((response) => {
+                  this.category = response;
+                  this.categoryForm.reset(
+                    {
+                      CategoryID: String(response.CategoryID ?? ''),
+                      Name: response.Name ?? '',
+                      Description: response.Description ?? '',
+                      NameWithBadge: response.NameWithBadge ?? ''
+                    },
+                    { emitEvent: false }
+                  );
+                  this.categoryForm.markAsPristine();
+                }),
+                catchError(() => {
+                  this.category = null;
+                  this.errorMessage = 'Unable to load category details.';
+                  return EMPTY;
+                }),
+                finalize(() => {
+                  this.isLoading = false;
+                })
+              );
+          }
+
+          this.errorMessage = 'Invalid category id.';
+          this.isLoading = false;
+          return EMPTY;
         })
       )
       .subscribe();
@@ -101,40 +139,82 @@ export class CategoriesDetailsComponent implements OnInit {
     }
 
     const categoryId = String(this.category.CategoryID);
-    this.isSaving = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
-    this.httpService
-      .patch<CategoryDto>(`http://localhost:4200/api/categories/${categoryId}`, {
-        Name: this.categoryForm.controls.Name.value.trim(),
-        Description: this.categoryForm.controls.Description.value.trim(),
-        NameWithBadge: this.categoryForm.controls.NameWithBadge.value.trim()
-      })
-      .pipe(
-        tap((updatedCategory) => {
-          this.category = updatedCategory;
-          this.categoryForm.reset(
-            {
-              CategoryID: String(updatedCategory.CategoryID ?? ''),
-              Name: updatedCategory.Name ?? '',
-              Description: updatedCategory.Description ?? '',
-              NameWithBadge: updatedCategory.NameWithBadge ?? ''
-            },
-            { emitEvent: false }
-          );
-          this.categoryForm.markAsPristine();
-          this.successMessage = 'Category updated successfully.';
-        }),
-        catchError(() => {
-          this.errorMessage = 'Unable to update category.';
-          return EMPTY;
-        }),
-        finalize(() => {
-          this.isSaving = false;
+    //** INSERT */
+    if (Number(categoryId) === 0) {
+      this.isSaving = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      this.httpService
+        .post<CategoryDto>(`http://localhost:4200/api/categories`, {
+          Name: this.categoryForm.controls.Name.value.trim(),
+          Description: this.categoryForm.controls.Description.value.trim(),
+          NameWithBadge: this.categoryForm.controls.NameWithBadge.value.trim()
         })
-      )
-      .subscribe();
+        .pipe(
+          tap((newCategory) => {
+            this.category = newCategory;
+            this.categoryForm.reset(
+              {
+                CategoryID: String(newCategory.CategoryID ?? ''),
+                Name: newCategory.Name ?? '',
+                Description: newCategory.Description ?? '',
+                NameWithBadge: newCategory.NameWithBadge ?? ''
+              },
+              { emitEvent: false }
+            );
+            this.categoryForm.markAsPristine();
+            this.successMessage = 'Category created successfully.';
+          }),
+          catchError(() => {
+            this.errorMessage = 'Unable to create category.';
+            return EMPTY;
+          }),
+          finalize(() => {
+            this.isSaving = false;
+          })
+        )
+        .subscribe();
+    }
+
+    //** UPDATE */
+    if (Number(categoryId) > 0) {
+      this.isSaving = true;
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      this.httpService
+        .patch<CategoryDto>(`http://localhost:4200/api/categories/${categoryId}`, {
+          Name: this.categoryForm.controls.Name.value.trim(),
+          Description: this.categoryForm.controls.Description.value.trim(),
+          NameWithBadge: this.categoryForm.controls.NameWithBadge.value.trim()
+        })
+        .pipe(
+          tap((updatedCategory) => {
+            this.category = updatedCategory;
+            this.categoryForm.reset(
+              {
+                CategoryID: String(updatedCategory.CategoryID ?? ''),
+                Name: updatedCategory.Name ?? '',
+                Description: updatedCategory.Description ?? '',
+                NameWithBadge: updatedCategory.NameWithBadge ?? ''
+              },
+              { emitEvent: false }
+            );
+            this.categoryForm.markAsPristine();
+            this.successMessage = 'Category updated successfully.';
+          }),
+          catchError(() => {
+            this.errorMessage = 'Unable to update category.';
+            return EMPTY;
+          }),
+          finalize(() => {
+            this.isSaving = false;
+          })
+        )
+        .subscribe();
+    }
   }
 
   onDelete(): void {
@@ -164,5 +244,10 @@ export class CategoriesDetailsComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  onUpdateBadgeName() {
+    const name = this.categoryForm.controls.Name.value.trim();
+    this.categoryForm.controls.NameWithBadge.setValue(name ? `${name} (0)` : '');
   }
 }
