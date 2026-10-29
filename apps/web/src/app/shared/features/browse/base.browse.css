@@ -1,0 +1,8 @@
+.table-auto {
+  table-layout: auto;
+  width: 100%;
+}
+
+.table-fixed {
+  table-layout: fixed;
+}
