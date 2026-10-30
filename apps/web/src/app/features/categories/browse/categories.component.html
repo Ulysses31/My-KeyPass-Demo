@@ -1,44 +1,6 @@
-<div class="space-y-6 px-6 py-8 sm:px-8">
-  <div
-    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Categories</h2>
-    <p class="mt-2 text-slate-600 dark:text-slate-300">
-      Organize records by type and keep your vault structured.
-    </p>
-  </div>
-
-  <section
-    *ngIf="successMessage"
-    class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
-    {{ successMessage }}
-  </section>
-
-  <section
-    *ngIf="errorMessage"
-    class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
-    {{ errorMessage }}
-  </section>
-
-  <div
-    *ngIf="!isLoading; else loadingState"
-    class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-    <article
-      *ngFor="let category of categories"
-      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 cursor-pointer"
-      (click)="getSelected(category.CategoryID)">
-      <h3 class="mt-0 text-lg font-semibold text-slate-900 dark:text-white">
-        {{ category.Name }}
-      </h3>
-      <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-        {{ category.Description }}
-      </p>
-    </article>
-  </div>
-
-  <ng-template #loadingState>
-    <section
-      class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <p class="text-slate-600 dark:text-slate-300">Loading categories...</p>
-    </section>
-  </ng-template>
-</div>
+<app-base-browse
+  [service]="categoriesService"
+  [title]="'Categories'"
+  [description]="'Organize records by type and keep your vault structured.'"
+  [headerNames]="headerNames">
+</app-base-browse>

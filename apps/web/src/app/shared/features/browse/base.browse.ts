@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeroIconComponent } from '../../hero-icon/hero-icon.component';
 import { BaseService } from '../../services/base.service';
@@ -18,6 +18,9 @@ export class BaseBrowseComponent<T> implements OnInit {
   router: Router = inject(Router);
   route: ActivatedRoute = inject(ActivatedRoute);
   shared: Shared = inject(Shared);
+  selectedCategory: string = '';
+  private selectedFilteredText: string = '';
+  headers: string[] = [];
   // toastr: ToastrService = inject(ToastrService);
 
   @Input({ required: true }) title: string = 'Base Browse Component';
@@ -26,6 +29,14 @@ export class BaseBrowseComponent<T> implements OnInit {
 
   constructor() {
     console.log('BaseBrowseComponent ctor...');
+    effect(() => {
+      if (!this.headers || this.headers.length === 0) {
+        this.headers = this.service
+          ? this.shared.getHeaders(this.headerNames, this.service)
+          : [];
+        this.selectedCategory = this.headers[0];
+      }
+    });
   }
 
   ngOnInit() {
@@ -48,5 +59,15 @@ export class BaseBrowseComponent<T> implements OnInit {
         this.router.navigate([`/${url[0].path}`, id]);
       });
     });
+  }
+
+  applyFilter(filterText: string): void {
+    this.selectedFilteredText = filterText;
+    this.service.applyFilter(filterText, this.selectedCategory);
+  }
+
+  selectFilter(flt: string) {
+    this.selectedCategory = flt;
+    this.applyFilter(this.selectedFilteredText);
   }
 }

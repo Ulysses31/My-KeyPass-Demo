@@ -20,6 +20,10 @@ export default class Shared {
    * @returns string[]
    */
   getHeaders(headerNames: string[], service: any) {
+    if (!service || !service.browserItems() || service.browserItems()!.length === 0) {
+      return [];
+    }
+
     if (headerNames.length === 0) {
       return Object.getOwnPropertyNames(service.browserItems()![0]).map((dt) => {
         return dt;
@@ -47,6 +51,36 @@ export default class Shared {
    */
   asRecord(value: any): Record<string, any> {
     return value && typeof value === 'object' ? (value as Record<string, any>) : {};
+  }
+
+  /**
+   * Retrieves the value of a specified field from an object,
+   * performing a case-insensitive search if necessary.
+   * @param item any The object containing the field.
+   * @param field string The field name to retrieve the value for.
+   * @returns string | null The value of the field as a string, or null if not found.
+   */
+  getFieldValue(item: any, field: string): string | null {
+    if (!field || item == null) {
+      return null;
+    }
+
+    const record = item as Record<string, unknown>;
+    const exactMatch = record[field];
+    if (exactMatch !== undefined && exactMatch !== null) {
+      return String(exactMatch);
+    }
+
+    const caseInsensitiveMatch = Object.entries(record).find(
+      ([key]) => key.toLowerCase() === field.toLowerCase()
+    );
+
+    if (!caseInsensitiveMatch) {
+      return null;
+    }
+
+    const value = caseInsensitiveMatch[1];
+    return value === null || value === undefined ? null : String(value);
   }
 
   /**

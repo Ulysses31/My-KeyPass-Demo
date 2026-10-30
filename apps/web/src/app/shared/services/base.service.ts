@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import Shared from '../shared';
 
 @Injectable({ providedIn: 'root' })
 export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>> {
   protected abstract _url: string;
   private readonly httpService: HttpClient = inject(HttpClient);
   private toastr: ToastrService = inject(ToastrService);
+  private shared: Shared = inject(Shared);
 
   // SIGNALS
+  private readonly originalBrowserSignal = signal<T[] | null>(null);
   protected readonly browserSignal = signal<T[] | null>(null);
   protected readonly loaderSignal = signal<T | null>({} as T);
   protected readonly loadingSignal = signal<boolean>(false);
@@ -26,12 +29,16 @@ export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>>
   getAll(): void {
     console.log('url getAll', this._url);
     this.browserSignal.set([]);
+    this.originalBrowserSignal.set([]);
     this.loaderSignal.set({} as T);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
 
     this.httpService.get<T[]>(this._url).subscribe({
-      next: (data) => this.browserSignal.set(data),
+      next: (data) => {
+        this.originalBrowserSignal.set(data);
+        this.browserSignal.set(data);
+      },
       error: (err) => {
         this.errorSignal.set(err.message);
         this.loadingSignal.set(false);
@@ -114,5 +121,22 @@ export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>>
       },
       complete: () => this.loadingSignal.set(false)
     });
+  }
+
+  applyFilter(filterText: string, field: string): void {
+    const sourceItems = this.originalBrowserSignal() ?? this.browserSignal() ?? [];
+    const normalizedFilterText = (filterText ?? '').trim().toLowerCase();
+
+    if (!normalizedFilterText) {
+      this.browserSignal.set(sourceItems);
+      return;
+    }
+
+    this.browserSignal.set(
+      sourceItems.filter((item) => {
+        const itemValue = this.shared.getFieldValue(item, field);
+        return itemValue?.toLowerCase().includes(normalizedFilterText);
+      })
+    );
   }
 }
