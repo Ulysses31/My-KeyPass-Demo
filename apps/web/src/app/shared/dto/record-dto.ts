@@ -8,6 +8,6 @@ export class RecordDto {
   EncryptedPassword!: string;
   URL!: string;
   Notes!: string;
-  CategoryID!: number;
+  CategoryID!: string;
   Category!: CategoryDto;
 }

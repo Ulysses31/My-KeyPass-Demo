@@ -3,7 +3,9 @@ import { CategoriesComponent } from './features/categories/browse/categories.com
 import { CategoriesDetailsComponent } from './features/categories/load/categories.details.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { RowsComponent } from './features/rows/browse/rows.component';
-import { RowsDetailsComponent } from './features/rows/load/rows.details.component';
+import {
+  RowsDetailsComponent
+} from './features/rows/load/rows.details.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'overview', pathMatch: 'full' },

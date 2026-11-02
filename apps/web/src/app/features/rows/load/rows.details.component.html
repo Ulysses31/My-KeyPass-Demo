@@ -1,148 +1,129 @@
-<div class="space-y-6 px-6 py-8 sm:px-8">
-  <div
-    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Data Details</h2>
-    <p class="mt-2 text-slate-600 dark:text-slate-300">
-      Stored records and imported JSON-backed data for your vault.
-    </p>
-  </div>
+<app-base-load
+  [service]="rowsService"
+  [baseForm]="rowForm"
+  [title]="'Rows'"
+  [description]="'Modify records by type and keep your vault structured.'">
+  <form
+    [formGroup]="rowForm"
+    (ngSubmit)="onSubmit()"
+    class="grid gap-5 md:grid-cols-2"
+    autocomplete="off">
+    <div class="space-y-2">
+      <label
+        for="recordId"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Record ID
+      </label>
+      <input
+        id="recordId"
+        type="text"
+        formControlName="RecordID"
+        readonly
+        class="dark:disabled:bg-slate-700 w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
+    </div>
 
-  <section
-    *ngIf="errorMessage"
-    class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
-    {{ errorMessage }}
-  </section>
+    <div class="space-y-2">
+      <label
+        for="title"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Title*
+      </label>
+      <input
+        id="title"
+        type="text"
+        formControlName="Title"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
 
-  <section
-    *ngIf="successMessage"
-    class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
-    {{ successMessage }}
-  </section>
+      <p
+        *ngIf="rowForm.controls.Title.invalid && rowForm.controls.Title.touched"
+        class="text-sm text-rose-600 dark:text-rose-300">
+        Title is required and must be between 2 and 100 characters.
+      </p>
+    </div>
 
-  <section
-    *ngIf="!isLoading && record; else loadingState"
-    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-    <form
-      [formGroup]="rowForm"
-      (ngSubmit)="onSubmit()"
-      class="grid gap-5 md:grid-cols-2"
-      autocomplete="off">
-      <div class="space-y-2">
-        <label
-          for="recordId"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Record ID
-        </label>
-        <input
-          id="recordId"
-          type="text"
-          formControlName="RecordID"
-          readonly
-          class="dark:disabled:bg-slate-700 w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
-      </div>
+    <div class="space-y-2">
+      <label
+        for="username"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Username*
+      </label>
+      <input
+        id="username"
+        type="text"
+        formControlName="Username"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
 
-      <div class="space-y-2">
-        <label
-          for="title"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Title
-        </label>
-        <input
-          id="title"
-          type="text"
-          formControlName="Title"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
+      <p
+        *ngIf="rowForm.controls.Username.invalid && rowForm.controls.Username.touched"
+        class="text-sm text-rose-600 dark:text-rose-300">
+        Username is required and cannot exceed 100 characters.
+      </p>
+    </div>
 
-        <p
-          *ngIf="rowForm.controls.Title.invalid && rowForm.controls.Title.touched"
-          class="text-sm text-rose-600 dark:text-rose-300">
-          Title is required and must be between 2 and 100 characters.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <label
-          for="username"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Username
-        </label>
-        <input
-          id="username"
-          type="text"
-          formControlName="Username"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
-
-        <p
-          *ngIf="rowForm.controls.Username.invalid && rowForm.controls.Username.touched"
-          class="text-sm text-rose-600 dark:text-rose-300">
-          Username is required and cannot exceed 100 characters.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <label
-          for="password"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Password
-        </label>
-        <input
-          id="password"
-          type="text"
-          formControlName="Password"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
-        <!-- <input
+    <div class="space-y-2">
+      <label
+        for="password"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Password*
+      </label>
+      <input
+        id="password"
+        type="text"
+        formControlName="Password"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
+      <!-- <input
           id="encryptedPassword"
           readonly
           type="text"
           formControlName="EncryptedPassword"
           class="dark:disabled:bg-slate-700 w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" /> -->
 
-        <p
-          *ngIf="rowForm.controls.Password.invalid && rowForm.controls.Password.touched"
-          class="text-sm text-rose-600 dark:text-rose-300">
-          Password is required and cannot exceed 150 characters.
-        </p>
-      </div>
+      <p
+        *ngIf="rowForm.controls.Password.invalid && rowForm.controls.Password.touched"
+        class="text-sm text-rose-600 dark:text-rose-300">
+        Password is required and cannot exceed 150 characters.
+      </p>
+    </div>
 
-      <div class="space-y-2 md:col-span-2">
-        <label
-          for="url"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          URL
-        </label>
-        <input
-          id="url"
-          type="text"
-          formControlName="URL"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
+    <div class="space-y-2 md:col-span-2">
+      <label
+        for="url"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        URL
+      </label>
+      <input
+        id="url"
+        type="text"
+        formControlName="URL"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
 
-        <p
-          *ngIf="rowForm.controls.URL.invalid && rowForm.controls.URL.touched"
-          class="text-sm text-rose-600 dark:text-rose-300">
-          URL cannot exceed 300 characters.
-        </p>
-      </div>
+      <p
+        *ngIf="rowForm.controls.URL.invalid && rowForm.controls.URL.touched"
+        class="text-sm text-rose-600 dark:text-rose-300">
+        URL cannot exceed 300 characters.
+      </p>
+    </div>
 
-      <div class="space-y-2 md:col-span-2">
-        <label
-          for="notes"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Notes
-        </label>
-        <textarea
-          id="notes"
-          formControlName="Notes"
-          rows="4"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700"></textarea>
+    <div class="space-y-2 md:col-span-2">
+      <label
+        for="notes"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Notes
+      </label>
+      <textarea
+        id="notes"
+        formControlName="Notes"
+        rows="4"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700"></textarea>
 
-        <p
-          *ngIf="rowForm.controls.Notes.invalid && rowForm.controls.Notes.touched"
-          class="text-sm text-rose-600 dark:text-rose-300">
-          Notes cannot exceed 500 characters.
-        </p>
-      </div>
+      <p
+        *ngIf="rowForm.controls.Notes.invalid && rowForm.controls.Notes.touched"
+        class="text-sm text-rose-600 dark:text-rose-300">
+        Notes cannot exceed 500 characters.
+      </p>
+    </div>
 
-      <!-- <div class="space-y-2">
+    <!-- <div class="space-y-2">
         <label
           for="categoryId"
           class="block text-sm font-medium text-slate-700 dark:text-slate-200">
@@ -155,58 +136,37 @@
           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700" />
       </div> -->
 
-      <div class="space-y-2">
-        <label
-          for="categoryName"
-          class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Category
-        </label>
-        <!-- <input
-          id="categoryName"
-          type="text"
-          formControlName="CategoryName"
-          readonly
-          class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" />
-        <input
-          id="categoryIdtext"
-          formControlName="CategoryID"
-          readonly
-          class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-900 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100" /> -->
-        <select
-          id="categoryId"
-          formControlName="CategoryID"
-          (change)="applyCategoryFilter($any($event.target).value)"
-          class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700">
-          <option *ngFor="let category of rowCategoryOptions" [value]="category.id">
-            {{ category.name }}
-          </option>
-        </select>
-      </div>
+    <div class="space-y-2">
+      <label
+        for="categoryName"
+        class="block text-sm font-medium text-slate-700 dark:text-slate-200">
+        Category*
+      </label>
+      <select
+        id="categoryId"
+        formControlName="CategoryID"
+        class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-slate-400 dark:focus:ring-slate-700">
+        <option *ngFor="let category of rowCategoryOptions" [ngValue]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
+    </div>
 
-      <div class="md:col-span-2 flex justify-end gap-3">
-        <button
-          *ngIf="deleteToggle"
-          type="button"
-          (click)="onDelete()"
-          [disabled]="isDeleting || isSaving"
-          class="inline-flex items-center rounded-xl border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-700 dark:bg-transparent dark:text-rose-300 dark:hover:bg-rose-950/30">
-          {{ isDeleting ? 'Deleting...' : 'Delete' }}
-        </button>
+    <div class="md:col-span-2 flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="onDelete()"
+        [disabled]="rowsService.loading() || rowForm.controls.RecordID.value == 0"
+        class="inline-flex items-center rounded-xl border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-rose-700 dark:bg-transparent dark:text-rose-300 dark:hover:bg-rose-950/30">
+        Delete
+      </button>
 
-        <button
-          type="submit"
-          [disabled]="rowForm.invalid || rowForm.pristine || isSaving || isDeleting"
-          class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
-          {{ isSaving ? 'Saving...' : 'Save Changes' }}
-        </button>
-      </div>
-    </form>
-  </section>
-
-  <ng-template #loadingState>
-    <section
-      class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-      <p class="text-slate-600 dark:text-slate-300">Loading data details...</p>
-    </section>
-  </ng-template>
-</div>
+      <button
+        type="submit"
+        [disabled]="rowsService.loading() || rowForm.invalid"
+        class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
+        Save
+      </button>
+    </div>
+  </form>
+</app-base-load>

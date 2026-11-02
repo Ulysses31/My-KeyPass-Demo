@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { catchError, EMPTY, finalize, map, switchMap, tap } from 'rxjs';
+import { of, tap } from 'rxjs';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 import { RecordDto } from '../../../shared/dto/record-dto';
+import { BaseLoadComponent } from '../../../shared/features/load/base.load';
 import { CryptoService } from '../../../shared/services/encrypt.decrypt';
+import { CategoriesService } from '../../categories/services/categories.service';
+import { RowsService } from '../services/rows.service';
 
 interface RowCategoryOption {
   id: string;
@@ -18,33 +17,23 @@ interface RowCategoryOption {
 @Component({
   selector: 'app-rows-details',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, BaseLoadComponent],
   templateUrl: './rows.details.component.html'
 })
-export class RowsDetailsComponent implements OnInit {
-  httpService: HttpClient = inject(HttpClient);
-  cryptoService: CryptoService = inject(CryptoService);
-  actRouter: ActivatedRoute = inject(ActivatedRoute);
-  router: Router = inject(Router);
-  destroyRef: DestroyRef = inject(DestroyRef);
-  toastr: ToastrService = inject(ToastrService);
-
-  record: RecordDto | null = null;
-  recordPassword: string = '';
-  recordEncryptedPassword: string = '';
-  isLoading = true;
-  isSaving = false;
-  isDeleting = false;
-  deleteToggle: boolean = false;
-  errorMessage = '';
-  successMessage = '';
-  masterPassword = '12345678'; // Replace with actual master password
+export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implements OnInit {
+  readonly cryptoService: CryptoService = inject(CryptoService);
+  readonly rowsService: RowsService = inject(RowsService);
+  readonly categoriesService: CategoriesService = inject(CategoriesService);
+  readonly masterPassword = '12345678'; // Replace with actual master password
 
   rowCategoryOptions: RowCategoryOption[] = [];
   categories: CategoryDto[] = [];
+  private recordPassword: string = '';
+  private recordEncryptedPassword: string = '';
+  private formSubmitted: boolean = false;
 
   rowForm = new FormGroup({
-    RecordID: new FormControl({ value: '', disabled: true }, { nonNullable: true }),
+    RecordID: new FormControl({ value: 0, disabled: true }, { nonNullable: true }),
     Title: new FormControl('', {
       nonNullable: true,
       validators: [
@@ -61,12 +50,12 @@ export class RowsDetailsComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(150)]
     }),
-    // EncryptedPassword: new FormControl(
-    //   { value: '', disabled: true },
-    //   {
-    //     nonNullable: true
-    //   }
-    // ),
+    EncryptedPassword: new FormControl(
+      { value: '', disabled: true },
+      {
+        nonNullable: true
+      }
+    ),
     URL: new FormControl('', {
       nonNullable: true,
       validators: [Validators.maxLength(300)]
@@ -78,308 +67,90 @@ export class RowsDetailsComponent implements OnInit {
     CategoryID: new FormControl(
       { value: '', disabled: false },
       { nonNullable: true, validators: [Validators.required] }
-    ),
-    CategoryName: new FormControl(
-      { value: '', disabled: true },
-      { nonNullable: true, validators: [Validators.required] }
     )
+    // CategoryName: new FormControl(
+    //   { value: '', disabled: true },
+    //   { nonNullable: true, validators: [Validators.required] }
+    // )
   });
 
-  ngOnInit(): void {
-    //* Load categories */
-    this.isLoading = true;
-    this.httpService
-      .get<CategoryDto[]>('http://localhost:4200/api/categories')
-      .pipe(
-        map((response: CategoryDto[]) => {
-          this.categories = response;
-          this.rowCategoryOptions = response
-            .map((cat) => ({
-              id: String(cat.CategoryID ?? ''),
-              name: String(cat.Name ?? '')
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name));
-          return response;
-        }),
-        catchError(() => {
-          this.rowCategoryOptions = [];
-          this.errorMessage = 'Unable to load categories.';
-          this.toastr.error('Unable to load categories.');
-          return EMPTY;
-        }),
-        finalize(() => {
-          this.isLoading = false;
-        })
-      )
-      .subscribe();
+  constructor() {
+    super();
+    effect(() => {
+      this.rowForm.reset(this.rowsService.loaderItem()!);
 
-    //* Load row details */
-    this.actRouter.params
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        switchMap((params) => {
-          const id = String(params['id'] ?? '');
-          const recordID = Number(id);
+      this.route.params.subscribe((params) => {
+        const id = String(params['id'] ?? '');
 
-          if (!id || recordID < 0) {
-            this.errorMessage = 'Invalid row id.';
-            this.toastr.error('Invalid row id.');
-            this.isLoading = false;
-            return EMPTY;
-          }
+        if (Number(id) > 0) {
+          this.recordPassword = this.rowsService.loaderItem()?.Password ?? '';
+          this.recordEncryptedPassword =
+            this.rowsService.loaderItem()?.EncryptedPassword ?? '';
 
-          //** CREATE NEW */
-          if (recordID === 0) {
-            this.deleteToggle = false;
-            this.errorMessage = '';
-            this.successMessage = '';
-            this.rowForm.reset(
-              {
-                RecordID: '0',
-                Title: '',
-                Username: '',
-                Password: '',
-                URL: '',
-                Notes: '',
-                CategoryID: '',
-                CategoryName: ''
-              },
-              { emitEvent: false }
-            );
-            this.record = {
-              RecordID: 0,
-              Title: '',
-              Username: '',
-              Password: '',
-              EncryptedPassword: '',
-              URL: '',
-              Notes: '',
-              CategoryID: 0,
-              Category: new CategoryDto()
-            };
-            this.rowForm.markAsPristine();
-            return EMPTY;
-          }
+          this.rowForm.controls.Password.setValue('*'.repeat(this.recordPassword.length));
+        }
+      });
 
-          //** EDIT */
-          if (recordID > 0) {
-            this.deleteToggle = true;
-            this.errorMessage = '';
-            this.successMessage = '';
-            this.isLoading = true;
-
-            return this.httpService
-              .get<RecordDto>(`http://localhost:4200/api/rows/${id}`)
-              .pipe(
-                tap((response) => {
-                  this.record = response;
-                  this.recordPassword = response.Password ?? '';
-                  this.recordEncryptedPassword = response.EncryptedPassword ?? '';
-                  this.rowForm.reset(
-                    {
-                      RecordID: String(response.RecordID ?? ''),
-                      Title: response.Title ?? '',
-                      Username: response.Username ?? '',
-                      // Password: response.Password ?? '',
-                      Password: '*'.repeat(this.recordPassword.length),
-                      // EncryptedPassword: response.EncryptedPassword ?? '',
-                      URL: response.URL ?? '',
-                      Notes: response.Notes ?? '',
-                      CategoryID: response.CategoryID.toString(),
-                      CategoryName: response.Category?.Name ?? ''
-                    },
-                    { emitEvent: false }
-                  );
-                  this.rowForm.markAsPristine();
-                }),
-                catchError(() => {
-                  this.record = null;
-                  this.errorMessage = 'Unable to load row details.';
-                  this.toastr.error('Unable to load row details.');
-                  return EMPTY;
-                }),
-                finalize(() => {
-                  this.isLoading = false;
-                })
-              );
-          }
-
-          return EMPTY;
-        })
-      )
-      .subscribe();
+      // extra lookup for categories
+      this.updateCategories();
+    });
   }
 
-  async onSubmit(): Promise<void> {
-    if (!this.record) {
-      return;
-    }
+  override ngOnInit(): void {
+    super.ngOnInit();
+
+    // extra lookup for categories
+    this.categoriesService.getAll();
+  }
+
+  override async onSubmit(): Promise<void> {
+    this.formSubmitted = true;
 
     if (this.rowForm.invalid) {
       this.rowForm.markAllAsTouched();
       return;
     }
 
-    let encryptedPassword: string = '';
-    await this.encryptPassword(this.rowForm.controls.Password.value.trim()).then(
-      (res) => (encryptedPassword = res.encryptedPassword)
-    );
+    if (this.rowForm.controls.Password.dirty) {
+      let encryptedPassword: string = '';
+      await this.encryptPassword(this.rowForm.controls.Password.value.trim()).then(
+        (res) => {
+          encryptedPassword = res.encryptedPassword;
+          this.rowForm.controls.EncryptedPassword.setValue(encryptedPassword);
+        }
+      );
 
-    // let decryptedPassword = '';
-    // await this.decryptPassword(encryptedPassword).then(
-    //   (res) => (decryptedPassword = res.decryptedPassword)
-    // );
+      // let decryptedPassword = '';
+      // await this.decryptPassword(encryptedPassword).then(
+      //   (res) => (decryptedPassword = res.decryptedPassword)
+      // );
 
-    // console.log(encryptedPassword);
-    // console.log(decryptedPassword);
-
-    const recordId = String(this.record.RecordID);
-
-    //** INSERT */
-    if (Number(recordId) === 0) {
-      this.isSaving = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      this.httpService
-        .post<RecordDto>(`http://localhost:4200/api/rows`, {
-          Title: this.rowForm.controls.Title.value.trim(),
-          Username: this.rowForm.controls.Username.value.trim(),
-          Password: this.rowForm.controls.Password.value.trim(),
-          EncryptedPassword: encryptedPassword.trim(),
-          URL: this.rowForm.controls.URL.value.trim(),
-          Notes: this.rowForm.controls.Notes.value.trim(),
-          CategoryID: this.rowForm.controls.CategoryID.value
-        })
-        .pipe(
-          tap((newRecord) => {
-            this.record = {
-              ...newRecord,
-              Category: this.categories.find(
-                (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
-              )!
-            };
-
-            this.rowForm.reset(
-              {
-                RecordID: String(newRecord.RecordID ?? ''),
-                Title: newRecord.Title ?? '',
-                Username: newRecord.Username ?? '',
-                Password: '*'.repeat(newRecord.Password?.length ?? 0),
-                // EncryptedPassword: newRecord.EncryptedPassword ?? '',
-                URL: newRecord.URL ?? '',
-                Notes: newRecord.Notes ?? '',
-                CategoryName: this.record.Category.Name ?? '',
-                CategoryID: this.record.Category.CategoryID?.toString() ?? ''
-              },
-              { emitEvent: false }
-            );
-            this.rowForm.markAsPristine();
-            this.successMessage = 'Row created successfully.';
-            this.toastr.success('Row created successfully.');
-          }),
-          catchError(() => {
-            this.errorMessage = 'Unable to create row.';
-            this.toastr.error('Unable to create row.');
-            return EMPTY;
-          }),
-          finalize(() => {
-            this.isSaving = false;
-          })
-        )
-        .subscribe();
+      // console.log(encryptedPassword);
+      // console.log(decryptedPassword);
+    } else {
+      this.rowForm.controls.Password.setValue(this.recordPassword);
     }
 
-    //** UPDATE */
-    if (Number(recordId) > 0) {
-      this.isSaving = true;
-      this.errorMessage = '';
-      this.successMessage = '';
-
-      this.httpService
-        .patch<RecordDto>(`http://localhost:4200/api/rows/${recordId}`, {
-          Title: this.rowForm.controls.Title.value.trim(),
-          Username: this.rowForm.controls.Username.value.trim(),
-          Password: this.rowForm.controls.Password.value.trim(),
-          EncryptedPassword: encryptedPassword.trim(),
-          URL: this.rowForm.controls.URL.value.trim(),
-          Notes: this.rowForm.controls.Notes.value.trim(),
-          CategoryID: this.rowForm.controls.CategoryID.value
-        })
-        .pipe(
-          tap((updatedRecord) => {
-            this.record = {
-              ...updatedRecord,
-              Category: this.categories.find(
-                (c) => c.CategoryID.toString() === this.rowForm.controls.CategoryID.value
-              )!
-            };
-
-            this.rowForm.reset(
-              {
-                RecordID: String(updatedRecord.RecordID ?? ''),
-                Title: updatedRecord.Title ?? '',
-                Username: updatedRecord.Username ?? '',
-                Password: '*'.repeat(updatedRecord.Password?.length ?? 0),
-                // EncryptedPassword: updatedRecord.EncryptedPassword ?? '',
-                URL: updatedRecord.URL ?? '',
-                Notes: updatedRecord.Notes ?? '',
-                CategoryName: this.record.Category.Name ?? '',
-                CategoryID: this.record.Category.CategoryID?.toString() ?? ''
-              },
-              { emitEvent: false }
-            );
-            this.rowForm.markAsPristine();
-            this.successMessage = 'Row updated successfully.';
-            this.toastr.success('Row updated successfully.');
-          }),
-          catchError(() => {
-            this.errorMessage = 'Unable to update row.';
-            this.toastr.error('Unable to update row.');
-            return EMPTY;
-          }),
-          finalize(() => {
-            this.isSaving = false;
-          })
-        )
-        .subscribe();
-    }
+    super.onSubmit(this.rowsService, this.rowForm);
   }
 
-  onDelete(): void {
-    if (!this.record || this.isDeleting || this.isSaving) {
-      return;
-    }
+  override onDelete(): void {
+    super.onDelete(this.rowsService);
+  }
 
-    const recordId = String(this.record.RecordID);
-    this.isDeleting = true;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    this.httpService
-      .patch<RecordDto>(`http://localhost:4200/api/rows/${recordId}`, {
-        CategoryID: '8'
-      })
+  private updateCategories(): void {
+    of<CategoryDto[]>(this.categoriesService.browserItems() ?? [])
       .pipe(
-        tap(() => {
-          this.router.navigate(['/rows'], {
-            queryParams: { recycled: '1' }
-          });
-        }),
-        catchError(() => {
-          this.errorMessage = 'Unable to move row to Recycle Bin.';
-          this.toastr.error('Unable to move row to Recycle Bin.');
-          return EMPTY;
-        }),
-        finalize(() => {
-          this.isDeleting = false;
+        tap((data: CategoryDto[]) => {
+          this.rowCategoryOptions = data
+            .map((cat: CategoryDto) => ({
+              id: String(cat.CategoryID),
+              name: String(cat.Name)
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
         })
       )
       .subscribe();
-  }
-
-  applyCategoryFilter(categoryId: string): void {
-    this.rowForm.controls.CategoryID.setValue(categoryId);
   }
 
   private async encryptPassword(

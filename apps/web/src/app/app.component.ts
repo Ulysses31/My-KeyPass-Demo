@@ -30,9 +30,14 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart && event.url) {
         console.log('NavigationStart:', event.url);
-        if (event.url.includes('rows') || event.url.includes('categories')) {
+        if (event.url.includes('/rows') || event.url.includes('/categories')) {
           this.newEntryHide = false;
-        } else {
+        }
+        if (
+          event.url.includes('overview') ||
+          event.url.includes('/rows/') ||
+          event.url.includes('/categories/')
+        ) {
           this.newEntryHide = true;
         }
       }

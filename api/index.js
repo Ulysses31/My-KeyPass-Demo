@@ -131,8 +131,14 @@ app.post('/api/:resource', (req, res) => {
       return res.status(400).json({ error: 'Request body must be an object' });
     }
 
-    const nextId = payload[idField] ?? resolveNextId(items, idField);
+    // const nextId = payload[idField] ?? resolveNextId(items, idField);
+    const nextId = resolveNextId(items, idField);
     const newItem = { ...payload, [idField]: nextId };
+
+    // console.log('idField:', idField);
+    // console.log('Next ID:', nextId);
+    // console.log('New Item:', newItem);
+    // console.log('Payload:', payload);
 
     items.push(newItem);
     writeJsonFile(fileName, items);

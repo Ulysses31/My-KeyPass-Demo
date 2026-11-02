@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import Shared from '../shared';
 
@@ -7,6 +8,7 @@ import Shared from '../shared';
 export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>> {
   protected abstract _url: string;
   private readonly httpService: HttpClient = inject(HttpClient);
+  private router: Router = inject(Router);
   private toastr: ToastrService = inject(ToastrService);
   private shared: Shared = inject(Shared);
 
@@ -73,6 +75,7 @@ export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>>
       next: (created) => {
         this.loaderSignal.set(created);
         this.toastr.success('Item created successfully');
+        this.router.navigate([this._url.replace('http://localhost:4200/api', '')]);
       },
       error: (err) => {
         this.errorSignal.set(err.message);
@@ -88,7 +91,7 @@ export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>>
     this.browserSignal.set([]);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
-    this.httpService.put<T>(`${this._url}/${id}`, data).subscribe({
+    this.httpService.patch<T>(`${this._url}/${id}`, data).subscribe({
       next: (updated) => {
         this.loaderSignal.set(updated);
         this.toastr.success('Item updated successfully');
@@ -113,6 +116,7 @@ export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>>
           this.browserSignal()!.filter((item) => (item as any).id !== id)
         );
         this.toastr.success('Item deleted successfully');
+        this.router.navigate([this._url.replace('http://localhost:4200/api', '')]);
       },
       error: (err) => {
         this.errorSignal.set(err.message);

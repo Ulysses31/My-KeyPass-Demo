@@ -1,2 +1,31 @@
-<h2>Base Load Component</h2>
-<p>This is the base load component template.</p>
+<div class="space-y-6 px-6 py-8 sm:px-8">
+  <!-- Title -->
+  <section
+    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ title }}</h2>
+    <p class="mt-2 text-slate-600 dark:text-slate-300">{{ description }}</p>
+  </section>
+  <!-- Title -->
+
+  <!-- Error -->
+  <section
+    *ngIf="service.error()"
+    class="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+    {{ service.error() }}
+  </section>
+  <!-- Error -->
+
+  <section
+    *ngIf="!service.loading() && !service.error(); else loadingState"
+    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+    <ng-content></ng-content>
+  </section>
+
+  <ng-template #loadingState>
+    <section
+      *ngIf="service.loading()"
+      class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+      <p class="text-slate-600 dark:text-slate-300">Loading ...</p>
+    </section>
+  </ng-template>
+</div>
