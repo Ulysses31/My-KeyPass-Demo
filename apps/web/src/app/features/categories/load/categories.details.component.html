@@ -1,7 +1,10 @@
 <app-base-load
+  #baseLoad
   [service]="categoriesService"
   [baseForm]="categoriesForm"
   [title]="'Categories'"
+  [deleteConfirmationTitle]="'Delete category?'"
+  [deleteConfirmationDescription]="'This action will permanently delete the selected category.'"
   [description]="'Modify records by type and keep your vault structured.'">
   <form
     [formGroup]="categoriesForm"
@@ -91,7 +94,7 @@
     <div class="md:col-span-2 flex justify-end gap-3 mt-5">
       <button
         type="button"
-        (click)="onDelete()"
+        (click)="baseLoad.onDelete()"
         [disabled]="
           categoriesService.loading() || categoriesForm.controls['CategoryID'].value == 0
         "

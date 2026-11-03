@@ -23,6 +23,16 @@
     <ng-content></ng-content>
   </section>
 
+  <app-confirmation-dialog
+    [isOpen]="showDeleteDialog"
+    [title]="deleteConfirmationTitle"
+    [description]="deleteConfirmationDescription"
+    [yesLabel]="deleteConfirmationYesLabel"
+    [noLabel]="deleteConfirmationNoLabel"
+    [isBusy]="service.loading()"
+    (decision)="onDeleteDecision($event)">
+  </app-confirmation-dialog>
+
   <!-- <ng-template #loadingState>
     <section
       *ngIf="service.loading()"

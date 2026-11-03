@@ -104,10 +104,6 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
     super.onSubmit(this.rowsService, this.rowForm);
   }
 
-  override onDelete(): void {
-    super.onDelete(this.rowsService);
-  }
-
   private async encryptChangedPassword(): Promise<void> {
     if (this.rowForm.controls.Password.dirty) {
       let encryptedPassword: string = '';
