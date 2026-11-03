@@ -1,3 +1,5 @@
+<section *ngIf="service.loading()" class="loading"></section>
+
 <div class="space-y-6 px-6 py-8 sm:px-8">
   <!-- Title -->
   <section
@@ -16,7 +18,7 @@
   <!-- Error -->
 
   <section
-    *ngIf="!service.loading() && !service.error(); else loadingState"
+    *ngIf="!service.loading() && !service.error()"
     class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
     <div class="mb-4 flex items-start gap-3">
       <div class="">
@@ -97,11 +99,11 @@
     </table>
   </section>
 
-  <ng-template #loadingState>
+  <!-- <ng-template #loadingState>
     <section
       *ngIf="service.loading()"
       class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
       <p class="text-slate-600 dark:text-slate-300">Loading ...</p>
-    </section>
-  </ng-template>
+    </section> 
+  </ng-template> -->
 </div>

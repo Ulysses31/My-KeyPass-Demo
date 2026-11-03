@@ -30,7 +30,6 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
   categories: CategoryDto[] = [];
   private recordPassword: string = '';
   private recordEncryptedPassword: string = '';
-  private formSubmitted: boolean = false;
 
   rowForm = new FormGroup({
     RecordID: new FormControl({ value: 0, disabled: true }, { nonNullable: true }),
@@ -76,20 +75,10 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
 
   constructor() {
     super();
+
     effect(() => {
-      this.rowForm.reset(this.rowsService.loaderItem()!);
-
-      this.route.params.subscribe((params) => {
-        const id = String(params['id'] ?? '');
-
-        if (Number(id) > 0) {
-          this.recordPassword = this.rowsService.loaderItem()?.Password ?? '';
-          this.recordEncryptedPassword =
-            this.rowsService.loaderItem()?.EncryptedPassword ?? '';
-
-          this.rowForm.controls.Password.setValue('*'.repeat(this.recordPassword.length));
-        }
-      });
+      // Display form with current record data
+      this.updateViewForm();
 
       // extra lookup for categories
       this.updateCategories();
@@ -104,13 +93,22 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
   }
 
   override async onSubmit(): Promise<void> {
-    this.formSubmitted = true;
-
     if (this.rowForm.invalid) {
       this.rowForm.markAllAsTouched();
       return;
     }
 
+    // if password changed encrypt it before submitting
+    await this.encryptChangedPassword();
+
+    super.onSubmit(this.rowsService, this.rowForm);
+  }
+
+  override onDelete(): void {
+    super.onDelete(this.rowsService);
+  }
+
+  private async encryptChangedPassword(): Promise<void> {
     if (this.rowForm.controls.Password.dirty) {
       let encryptedPassword: string = '';
       await this.encryptPassword(this.rowForm.controls.Password.value.trim()).then(
@@ -130,12 +128,22 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
     } else {
       this.rowForm.controls.Password.setValue(this.recordPassword);
     }
-
-    super.onSubmit(this.rowsService, this.rowForm);
   }
 
-  override onDelete(): void {
-    super.onDelete(this.rowsService);
+  private updateViewForm(): void {
+    this.rowForm.reset(this.rowsService.loaderItem()!);
+
+    this.route.params.subscribe((params) => {
+      const id = String(params['id'] ?? '');
+
+      if (Number(id) > 0) {
+        this.recordPassword = this.rowsService.loaderItem()?.Password ?? '';
+        this.recordEncryptedPassword =
+          this.rowsService.loaderItem()?.EncryptedPassword ?? '';
+
+        this.rowForm.controls.Password.setValue('*'.repeat(this.recordPassword.length));
+      }
+    });
   }
 
   private updateCategories(): void {

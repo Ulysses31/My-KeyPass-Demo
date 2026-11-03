@@ -8,7 +8,8 @@ import { RowsService } from '../services/rows.service';
   selector: 'app-rows',
   standalone: true,
   imports: [CommonModule, BaseBrowseComponent],
-  templateUrl: './rows.component.html'
+  templateUrl: './rows.component.html',
+  styleUrls: ['./rows.component.scss']
 })
 export class RowsComponent extends BaseBrowseComponent<RecordDto> implements OnInit {
   readonly rowsService: RowsService = inject(RowsService);

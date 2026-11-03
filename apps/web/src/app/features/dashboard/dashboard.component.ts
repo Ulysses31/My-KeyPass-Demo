@@ -34,7 +34,8 @@ interface RowCategoryOption {
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, HeroIconComponent],
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);

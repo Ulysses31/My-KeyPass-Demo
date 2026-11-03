@@ -79,11 +79,12 @@
         </div>
       </div>
 
-      <section
+      <!-- <section
         *ngIf="isRowsLoading"
         class="mb-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
         Loading rows overview...
-      </section>
+      </section> -->
+      <section class="loading" *ngIf="isRowsLoading"></section>
 
       <div
         *ngIf="!isRowsLoading"

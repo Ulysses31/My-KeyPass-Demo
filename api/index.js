@@ -5,7 +5,7 @@ const path = require('path');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
-const apiDelayMs = 3000;
+const apiDelayMs = 1500;
 const dataDir = path.join(__dirname, '..', 'data');
 
 const resourceMap = {
