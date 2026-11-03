@@ -31,6 +31,11 @@ export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implement
   private recordPassword: string = '';
   private recordEncryptedPassword: string = '';
 
+  override readonly title = $localize`Rows`;
+  override readonly deleteConfirmationTitle = $localize`Delete row?`;
+  override readonly deleteConfirmationDescription = $localize`This action will permanently delete the selected row.`;
+  override readonly description = $localize`Modify records by type and keep your vault structured.`;
+
   rowForm = new FormGroup({
     RecordID: new FormControl({ value: 0, disabled: true }, { nonNullable: true }),
     Title: new FormControl('', {

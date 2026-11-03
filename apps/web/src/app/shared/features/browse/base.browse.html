@@ -25,7 +25,7 @@
         <label
           for="rowCategoryFilter"
           class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Filtered field
+          <span i18n>Filtered field</span>
         </label>
         <select
           id="rowCategoryFilter"
@@ -40,7 +40,7 @@
         <label
           for="rowCategoryFilter"
           class="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-          Filter by {{selectedCategory}}
+          <span i18n>Filter by</span> {{selectedCategory}}
         </label>
         <input
           type="text"
@@ -54,6 +54,7 @@
       <caption class="caption-top mb-5">
         <strong>{{ title }} ({{ service.browserItems()!.length }})</strong>
         <app-hero-icon
+          i18n-title
           name="refresh"
           class="absolute right-16 cursor-pointer"
           sizeClass="h-6 w-6"

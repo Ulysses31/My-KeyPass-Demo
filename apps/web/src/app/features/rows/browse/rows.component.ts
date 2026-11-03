@@ -14,6 +14,8 @@ import { RowsService } from '../services/rows.service';
 export class RowsComponent extends BaseBrowseComponent<RecordDto> implements OnInit {
   readonly rowsService: RowsService = inject(RowsService);
   override readonly headerNames: string[] = ['Title'];
+  override readonly title: string = $localize`Rows`;
+  override readonly description: string = $localize`Manage your rows efficiently.`;
 
   override ngOnInit(): void {
     super.ngOnInit();

@@ -19,6 +19,11 @@ export class CategoriesDetailsComponent
   readonly categoriesService: CategoriesService = inject(CategoriesService);
   category: CategoryDto | null = null;
 
+  override readonly title = $localize`Categories`;
+  override readonly deleteConfirmationTitle = $localize`Delete category?`;
+  override readonly deleteConfirmationDescription = $localize`This action will permanently delete the selected category.`;
+  override readonly description = $localize`Modify records by type and keep your vault structured.`;
+
   categoriesForm: FormGroup = new FormGroup({
     CategoryID: new FormControl({ value: 0, disabled: true }, { nonNullable: true }),
     Name: new FormControl('', {

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="2614607010577950577" datatype="html">
+        <source>Overview</source>
+        <target>Επισκόπηση</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">31,35</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">184,186</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1902100407096396858" datatype="html">
+        <source>Categories</source>
+        <target>Κατηγορίες</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">38,42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/browse/categories.component.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.ts</context>
+          <context context-type="linenumber">22</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">187,192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="146442697456175258" datatype="html">
+        <source>Data</source>
+        <target>Δεδομένα</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">45,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3724068243287682962" datatype="html">
+        <source>Team</source>
+        <target>Ομάδα</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">53,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1236603731407683911" datatype="html">
+        <source>Personal vault</source>
+        <target>Προσωπικός θησαυρός</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">56,62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6570363013146073520" datatype="html">
+        <source>Dashboard</source>
+        <target>Πίνακας ελέγχου</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7488978687841119591" datatype="html">
+        <source>New entry</source>
+        <target>Νέα εγγραφή</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.component.html</context>
+          <context context-type="linenumber">87,90</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3144391436185996982" datatype="html">
+        <source>Organize records by type and keep it structured.</source>
+        <target>Οργανώστε τις εγγραφές κατά τύπο και διατηρήστε τες οργανωμένες.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/browse/categories.component.ts</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7022070615528435141" datatype="html">
+        <source>Delete</source>
+        <target>Διαγραφή</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.html</context>
+          <context context-type="linenumber">102,107</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.html</context>
+          <context context-type="linenumber">164,169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3768927257183755959" datatype="html">
+        <source>Save</source>
+        <target>Αποθήκευση</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.html</context>
+          <context context-type="linenumber">109,114</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.html</context>
+          <context context-type="linenumber">171,176</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2465958149184991160" datatype="html">
+        <source>Delete category?</source>
+        <target>Διαγραφή κατηγορίας;</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5839933128063379514" datatype="html">
+        <source>This action will permanently delete the selected category.</source>
+        <target>Η ενέργεια αυτή θα διαγράψει οριστικά την επιλεγμένη κατηγορία.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5645774750709185971" datatype="html">
+        <source>Modify records by type and keep your vault structured.</source>
+        <target>Τροποποιήστε τις εγγραφές κατά τύπο και διατηρήστε την βάση σας οργανωμένη.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/categories/load/categories.details.component.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4916791506426974321" datatype="html">
+        <source>Rows dataset</source>
+        <target>Σύνολο εγγραφών</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">66,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7463672669478681076" datatype="html">
+        <source>Rows overview</source>
+        <target>Επισκόπηση εγγραφών</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">69,75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1890297221031788927" datatype="html">
+        <source>Filter by title</source>
+        <target>Φιλτράρισμα κατά τίτλο</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">85,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2930207646035431824" datatype="html">
+        <source>Filter by category</source>
+        <target>Φιλτράρισμα κατά κατηγορία</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">99,102</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3393133458004181121" datatype="html">
+        <source>All categories</source>
+        <target>Όλες οι κατηγορίες</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">107,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8602230900747891574" datatype="html">
+        <source>Navigate</source>
+        <target>Πλοήγηση</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">165,167</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="413346167952108153" datatype="html">
+        <source>items</source>
+        <target>αντικείμενα</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">207,211</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6651421501340481389" datatype="html">
+        <source>Security score</source>
+        <target>Βαθμολογία ασφάλειας</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">216,219</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3646053136746522210" datatype="html">
+        <source>this month</source>
+        <target>αυτόν τον μήνα</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.html</context>
+          <context context-type="linenumber">221,226</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6605848325133071125" datatype="html">
+        <source>Total Categories</source>
+        <target>Συνολικές κατηγορίες</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8204176479746810612" datatype="html">
+        <source>Active</source>
+        <target>Ενεργό</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8341472643188520371" datatype="html">
+        <source>Total Entries</source>
+        <target>Συνολικές εγγραφές</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/dashboard/dashboard.component.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5727110993298059160" datatype="html">
+        <source>Rows</source>
+        <target>Δεδομένα</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/browse/rows.component.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3451502993357362958" datatype="html">
+        <source>Manage your rows efficiently.</source>
+        <target>Διαχειριστείτε τις εγγραφές σας αποτελεσματικά.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/browse/rows.component.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6607822766126883927" datatype="html">
+        <source>Delete row?</source>
+        <target>Διαγραφή εγγραφής;</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7934886577281619015" datatype="html">
+        <source>This action will permanently delete the selected row.</source>
+        <target>Η ενέργεια αυτή θα διαγράψει οριστικά την επιλεγμένη εγγραφή.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/rows/load/rows.details.component.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8085133309811265581" datatype="html">
+        <source>Filtered field</source>
+        <target>Φιλτραρισμένο πεδίο</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/features/browse/base.browse.html</context>
+          <context context-type="linenumber">28,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4880728824338713664" datatype="html">
+        <source>Filter by</source>
+        <target>Φιλτράρισμα κατά</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/features/browse/base.browse.html</context>
+          <context context-type="linenumber">43,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1102717806459547726" datatype="html">
+        <source>Refresh</source>
+        <target>Ανανέωση</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/shared/features/browse/base.browse.html</context>
+          <context context-type="linenumber">61,65</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

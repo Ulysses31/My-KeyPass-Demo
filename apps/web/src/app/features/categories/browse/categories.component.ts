@@ -16,6 +16,8 @@ export class CategoriesComponent
 {
   readonly categoriesService: CategoriesService = inject(CategoriesService);
   override readonly headerNames: string[] = ['Name', 'Description'];
+  override readonly title: string = $localize`Categories`;
+  override readonly description: string = $localize`Organize records by type and keep your vault structured.`;
 
   override ngOnInit(): void {
     super.ngOnInit();

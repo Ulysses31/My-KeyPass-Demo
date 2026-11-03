@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
   router: Router = inject(Router);
   route: ActivatedRoute = inject(ActivatedRoute);
   newEntryHide: boolean = false;
-  title = 'Overview';
+  title = $localize`Overview`;
   theme: 'light' | 'dark' = 'light';
   private readonly THEME_KEY = 'keypass-theme';
 

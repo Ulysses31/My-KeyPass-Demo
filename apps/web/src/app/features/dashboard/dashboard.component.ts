@@ -50,15 +50,15 @@ export class DashboardComponent implements OnInit {
 
   summaryCards: SummaryCard[] = [
     {
-      label: 'Total Categories',
+      label: $localize`Total Categories`,
       value: '0',
-      change: 'Active',
+      change: $localize`Active`,
       tone: 'indigo'
     },
     {
-      label: 'Total Entries',
+      label: $localize`Total Entries`,
       value: '0',
-      change: 'Active',
+      change: $localize`Active`,
       tone: 'emerald'
     }
     // {
