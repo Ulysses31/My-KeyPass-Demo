@@ -30,6 +30,12 @@ interface RowCategoryOption {
   name: string;
 }
 
+interface CategorySummary {
+  name: string;
+  count: number;
+  color: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -44,28 +50,32 @@ export class DashboardComponent implements OnInit {
 
   summaryCards: SummaryCard[] = [
     {
-      label: 'Total entries',
-      value: '128',
-      change: '+12 this week',
+      label: 'Total Categories',
+      value: '0',
+      change: 'Active',
       tone: 'indigo'
     },
     {
-      label: 'Strong passwords',
-      value: '94%',
-      change: '+4.2%',
+      label: 'Total Entries',
+      value: '0',
+      change: 'Active',
       tone: 'emerald'
-    },
-    {
-      label: 'Security checks',
-      value: '18',
-      change: '3 pending',
-      tone: 'amber'
-    },
-    { label: 'At risk', value: '2', change: 'Needs review', tone: 'rose' }
+    }
+    // {
+    //   label: 'Security checks',
+    //   value: '18',
+    //   change: '3 pending',
+    //   tone: 'amber'
+    // },
+    // { label: 'At risk', value: '2', change: 'Needs review', tone: 'rose' }
   ];
+
+  summaryPerCategory: SummaryCard[] = [];
 
   rows: DashboardRow[] = [];
   allRows: DashboardRow[] = [];
+  rowsCount = 0;
+  categoriesCount = 0;
   rowCategoryOptions: RowCategoryOption[] = [];
   selectedRowTitle = '';
   selectedRowCategoryId = 'all';
@@ -74,11 +84,18 @@ export class DashboardComponent implements OnInit {
   encryptedPassword: string = '';
   masterPassword = '12345678'; // Replace with actual master password
 
-  categories = [
-    { name: 'Banking', count: 12, color: 'bg-indigo-100 text-indigo-700' },
-    { name: 'Email', count: 8, color: 'bg-sky-100 text-sky-700' },
-    { name: 'Developer', count: 17, color: 'bg-violet-100 text-violet-700' },
-    { name: 'Shopping', count: 10, color: 'bg-amber-100 text-amber-700' }
+  categoriesColors = [
+    'bg-indigo-100 text-indigo-700',
+    'bg-emerald-100 text-emerald-700',
+    'bg-amber-100 text-amber-700',
+    'bg-rose-100 text-rose-700'
+  ];
+
+  categories: CategorySummary[] = [
+    // { name: 'Banking', count: 12, color: 'bg-indigo-100 text-indigo-700' },
+    // { name: 'Email', count: 8, color: 'bg-sky-100 text-sky-700' },
+    // { name: 'Developer', count: 17, color: 'bg-violet-100 text-violet-700' },
+    // { name: 'Shopping', count: 10, color: 'bg-amber-100 text-amber-700' }
   ];
 
   ngOnInit(): void {
@@ -90,7 +107,12 @@ export class DashboardComponent implements OnInit {
     this.rowsErrorMessage = '';
 
     this.httpService
-      .get<{ rows: any[]; categories: any[] }>('http://localhost:4200/api/data')
+      .get<{
+        rows: any[];
+        rowsCount: number;
+        categories: any[];
+        categoriesCount: number;
+      }>('http://localhost:4200/api/data')
       .pipe(
         map((response) => {
           const categoryOptions = response.categories
@@ -138,12 +160,22 @@ export class DashboardComponent implements OnInit {
             } as DashboardRow;
           });
 
-          return { rows, categoryOptions };
+          return {
+            rows,
+            rowsCount: rows.length,
+            categoryOptions,
+            categoriesCount: categoryOptions.length
+          };
         }),
-        tap(({ rows, categoryOptions }) => {
+        tap(({ rows, rowsCount, categoryOptions, categoriesCount }) => {
           this.rowCategoryOptions = categoryOptions;
           this.allRows = rows;
+          this.rowsCount = rowsCount;
+          this.categoriesCount = categoriesCount;
+          this.summaryCards[0].value = String(this.categoriesCount);
+          this.summaryCards[1].value = String(this.rowsCount);
           this.applyCategoryFilter(this.selectedRowCategoryId);
+          this.getSummaryByCategory();
         }),
         catchError(() => {
           this.rowCategoryOptions = [];
@@ -153,7 +185,9 @@ export class DashboardComponent implements OnInit {
           this.toastr.error('Unable to load rows data.');
           return of({
             rows: [] as DashboardRow[],
-            categoryOptions: [] as RowCategoryOption[]
+            categoryOptions: [] as RowCategoryOption[],
+            rowsCount: 0,
+            categoriesCount: 0
           });
         }),
         finalize(() => {
@@ -161,6 +195,25 @@ export class DashboardComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  private getSummaryByCategory(): void {
+    // this.summaryPerCategory = this.rowCategoryOptions.map((category) => {
+    // const rowsInCategory = this.allRows.filter((row) => row.CategoryID === category.id);
+    // return {
+    //   label: 'Total entries for category',
+    //   value: String(rowsInCategory.length),
+    //   tone: 'indigo',
+    //   change: category.name
+    // };
+    this.categories = this.rowCategoryOptions.map((category) => {
+      const rowsInCategory = this.allRows.filter((row) => row.CategoryID === category.id);
+      return {
+        name: category.name,
+        count: rowsInCategory.length,
+        color: this.categoriesColors[Math.floor(Math.random() * 4)]
+      };
+    });
   }
 
   applyCategoryFilter(categoryId: string): void {
