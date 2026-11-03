@@ -1,3 +1,8 @@
+/**
+ * Categories detail form component.
+ *
+ * Handles create and update operations for category entries.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -5,6 +10,9 @@ import { CategoryDto } from '../../../shared/dto/category-dto';
 import { BaseLoadComponent } from '../../../shared/features/load/base.load';
 import { CategoriesService } from '../services/categories.service';
 
+/**
+ * Form view for category details and deletion confirmation.
+ */
 @Component({
   selector: 'app-categories-details',
   standalone: true,
@@ -12,6 +20,9 @@ import { CategoriesService } from '../services/categories.service';
   providers: [],
   templateUrl: './categories.details.component.html'
 })
+/**
+ * Form view for category details and category deletion.
+ */
 export class CategoriesDetailsComponent
   extends BaseLoadComponent<CategoryDto>
   implements OnInit

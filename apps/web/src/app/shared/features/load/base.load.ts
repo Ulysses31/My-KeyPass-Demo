@@ -1,3 +1,8 @@
+/**
+ * Base form page component.
+ *
+ * Encapsulates a shared create/edit/delete workflow for detail screens.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -5,6 +10,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BaseService } from '../../services/base.service';
 import { ConfirmationDialogComponent } from '../confirmation/confirmation-dialog.component';
 
+/**
+ * Shared abstract form component for create/edit detail pages.
+ */
 @Component({
   selector: 'app-base-load',
   standalone: true,
@@ -12,6 +20,9 @@ import { ConfirmationDialogComponent } from '../confirmation/confirmation-dialog
   templateUrl: 'base.load.html',
   styleUrls: ['base.load.css']
 })
+/**
+ * Shared abstract form component for create/edit detail pages.
+ */
 export class BaseLoadComponent<T> implements OnInit {
   @Input({ required: false }) service!: BaseService<T>;
   @Input({ required: false }) baseForm!: FormGroup;

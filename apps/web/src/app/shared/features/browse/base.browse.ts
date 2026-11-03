@@ -1,3 +1,8 @@
+/**
+ * Base browse component.
+ *
+ * Provides a common table/list view pattern with filter controls and row selection.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, effect, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -5,6 +10,9 @@ import { HeroIconComponent } from '../../hero-icon/hero-icon.component';
 import { BaseService } from '../../services/base.service';
 import Shared from '../../shared';
 
+/**
+ * Generic browse page used by categories and rows views.
+ */
 @Component({
   selector: 'app-base-browse',
   standalone: true,
@@ -12,6 +20,9 @@ import Shared from '../../shared';
   templateUrl: 'base.browse.html',
   styleUrls: ['base.browse.css']
 })
+/**
+ * Generic browse page used by categories and rows views.
+ */
 export class BaseBrowseComponent<T> implements OnInit {
   @Input({ required: false }) service!: BaseService<T>;
   @Input({ required: false }) headerNames!: string[];

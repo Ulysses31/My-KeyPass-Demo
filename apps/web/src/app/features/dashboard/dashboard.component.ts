@@ -1,3 +1,8 @@
+/**
+ * Dashboard overview component.
+ *
+ * Loads the vault dataset and presents summary cards and a filtered rows table.
+ */
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
@@ -7,6 +12,9 @@ import { RecordDto } from '../../shared/dto/record-dto';
 import { HeroIconComponent } from '../../shared/hero-icon/hero-icon.component';
 import { CryptoService } from '../../shared/services/encrypt.decrypt';
 
+/**
+ * Summary statistic card metadata.
+ */
 interface SummaryCard {
   label: string;
   value: string;
@@ -43,6 +51,9 @@ interface CategorySummary {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
+/**
+ * Dashboard overview component.
+ */
 export class DashboardComponent implements OnInit {
   httpService: HttpClient = inject(HttpClient);
   cryptoService: CryptoService = inject(CryptoService);

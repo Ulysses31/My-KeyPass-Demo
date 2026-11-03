@@ -1,3 +1,8 @@
+/**
+ * Reusable hero icon component.
+ *
+ * Renders a lightweight SVG-based icon using a predefined name map.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 
@@ -29,6 +34,9 @@ type HeroIconName =
     </svg>
   `
 })
+/**
+ * SVG icon wrapper used throughout the UI.
+ */
 export class HeroIconComponent {
   @Input({ required: true }) name: HeroIconName = 'home';
   @Input() sizeClass = 'h-4 w-4';

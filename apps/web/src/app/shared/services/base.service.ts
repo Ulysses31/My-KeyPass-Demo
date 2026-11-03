@@ -1,9 +1,18 @@
+/**
+ * Shared service base class for CRUD operations.
+ *
+ * Provides a reusable HTTP layer for resource entities and keeps common loading,
+ * filtering, and navigation behavior in one place.
+ */
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import Shared from '../shared';
 
+/**
+ * Base service containing common resource operations and reactive state.
+ */
 @Injectable({ providedIn: 'root' })
 export abstract class BaseService<T, TUpdate = Partial<T>, TCreate = Partial<T>> {
   protected abstract _url: string;

@@ -1,15 +1,26 @@
+/**
+ * Categories browse page.
+ *
+ * Lists and filters categories using the shared browse component.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { CategoryDto } from '../../../shared/dto/category-dto';
 import { BaseBrowseComponent } from '../../../shared/features/browse/base.browse';
 import { CategoriesService } from '../services/categories.service';
 
+/**
+ * Displays the category collection in a filterable list view.
+ */
 @Component({
   selector: 'app-categories',
   standalone: true,
   imports: [CommonModule, BaseBrowseComponent],
   templateUrl: './categories.component.html'
 })
+/**
+ * Displays the category collection in a filterable list view.
+ */
 export class CategoriesComponent
   extends BaseBrowseComponent<CategoryDto>
   implements OnInit

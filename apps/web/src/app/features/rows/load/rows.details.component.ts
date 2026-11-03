@@ -1,3 +1,8 @@
+/**
+ * Rows detail form component.
+ *
+ * Handles the create/update workflow for credential rows and related category assignment.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,6 +14,9 @@ import { CryptoService } from '../../../shared/services/encrypt.decrypt';
 import { CategoriesService } from '../../categories/services/categories.service';
 import { RowsService } from '../services/rows.service';
 
+/**
+ * Lightweight category option used in the row form.
+ */
 interface RowCategoryOption {
   id: string;
   name: string;
@@ -20,6 +28,9 @@ interface RowCategoryOption {
   imports: [CommonModule, ReactiveFormsModule, BaseLoadComponent],
   templateUrl: './rows.details.component.html'
 })
+/**
+ * Form view for row details and row deletion.
+ */
 export class RowsDetailsComponent extends BaseLoadComponent<RecordDto> implements OnInit {
   readonly cryptoService: CryptoService = inject(CryptoService);
   readonly rowsService: RowsService = inject(RowsService);

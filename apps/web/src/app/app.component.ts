@@ -1,3 +1,9 @@
+/**
+ * Root application shell component.
+ *
+ * Provides the main navigation layout, page title, theme switcher, and the
+ * global entry point to the dashboard and CRUD screens.
+ */
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import {
@@ -10,6 +16,9 @@ import {
 } from '@angular/router';
 import { HeroIconComponent } from './shared/hero-icon/hero-icon.component';
 
+/**
+ * Main application layout component.
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -17,6 +26,9 @@ import { HeroIconComponent } from './shared/hero-icon/hero-icon.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+/**
+ * Main application layout component.
+ */
 export class AppComponent implements OnInit {
   router: Router = inject(Router);
   route: ActivatedRoute = inject(ActivatedRoute);

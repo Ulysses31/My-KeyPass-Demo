@@ -1,4 +1,9 @@
-// crypto.service.ts
+/**
+ * Web Crypto-based encryption helper.
+ *
+ * This service provides AES-GCM password encryption and PBKDF2 key derivation
+ * for a local browser-only vault demo.
+ */
 import { Injectable } from '@angular/core';
 
 type EncryptedPayload = {
